@@ -4,8 +4,7 @@ from config.config import *
 
 if __name__ == '__main__':
 
-	TDSession = TDClient(account_number=ACCOUNT_NUMBER,
-	                     client_id=CLIENT_ID,
+	TDSession = TDClient(client_id=CLIENT_ID,
 	                     redirect_uri=REDIRECT_URI,
 	                     credentials_path=JSON_PATH)
 	TDSession.login()
