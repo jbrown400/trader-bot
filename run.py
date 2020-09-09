@@ -1,18 +1,23 @@
-from td.client import TDClient
-from config.config import *
+import time as time_lib
+import pprint
+import pathlib
+import operator
+import pandas as pd
+
+from datetime import datetime
+from datetime import timedelta
+
+from pyrobot.robot import PyRobot
+from pyrobot.indicators import Indicators
+from configs.config import *
+import tda
 
 
 if __name__ == '__main__':
 
-	TDSession = TDClient(client_id=CLIENT_ID,
-	                     redirect_uri=REDIRECT_URI,
-	                     credentials_path=JSON_PATH)
-	TDSession.login()
-
-	price_history = TDSession.get_price_history(symbol='CCL',
-	                                            period_type='year',
-	                                            period=2,
-	                                            frequency='1',
-	                                            frequency_type='daily')
-
-	print(price_history)
+	trading_bot = PyRobot(
+		client_id=CLIENT_ID,
+		redirect_uri=REDIRECT_URI,
+		credentials_path=JSON_PATH,
+		paper_trading=True
+	)
