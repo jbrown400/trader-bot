@@ -3,3 +3,4 @@
 configs/*
 data/*
 **/__pycache__/**
+data.csv
