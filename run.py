@@ -12,6 +12,7 @@ from pyrobot.robot import PyRobot
 from pyrobot.indicators import Indicators
 from configs.config import *
 from core.main import Trainer
+import playground
 
 
 if __name__ == '__main__':
@@ -23,8 +24,7 @@ if __name__ == '__main__':
 		paper_trading=True
 	)
 
-	trainer = Trainer()
-	trainer.start()
+	playground.main()
 
 
 
