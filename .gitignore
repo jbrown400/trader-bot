@@ -1,6 +1,10 @@
+# Directories
 .idea/
-.DS_STORE
 configs/*
 data/*
+my_logs/
 **/__pycache__/**
+
+# Files
+.DS_STORE
 data.csv

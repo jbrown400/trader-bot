@@ -17,12 +17,12 @@ import playground
 
 if __name__ == '__main__':
 
-	trading_bot = PyRobot(
-		client_id=CLIENT_ID,
-		redirect_uri=REDIRECT_URI,
-		credentials_path=JSON_PATH,
-		paper_trading=True
-	)
+	# trading_bot = PyRobot(
+	# 	client_id=CLIENT_ID,
+	# 	redirect_uri=REDIRECT_URI,
+	# 	credentials_path=JSON_PATH,
+	# 	paper_trading=True
+	# )
 
 	playground.main()
 
@@ -35,13 +35,13 @@ if __name__ == '__main__':
 	# print("Post market open: ", trading_bot.post_market_open)
 	#
 	# end_date = datetime.today()
-	# start_date = end_date - timedelta(days=1)
+	# start_date = end_date - timedelta(days=100)
 	#
 	# trading_robot_portfolio.add_position(
 	# 	symbol='MSFT',
 	# 	asset_type='equity',
 	# )
-
+	#
 	# today_data = trading_bot.grab_historical_prices(
 	# 	start=start_date,
 	# 	end=end_date,
