@@ -103,7 +103,8 @@ def get_run_logdir():
 	run_id = time.strftime("run_%Y_%m_%d-%H_%M_%S")
 	return os.path.join(root_logdir, run_id)
 
-def build_model(n_hidden=1, n_neurons=30, learning_rate=3e-3, input_shape=[0]):
+
+def build_model(n_hidden=1, n_neurons=30, learning_rate=3e-3, input_shape=[8]):
 	model = keras.models.Sequential()
 	model.add(keras.layers.InputLayer(input_shape=input_shape))
 	for layer in range(n_hidden):
