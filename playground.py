@@ -55,6 +55,11 @@ def main():
 	rnd_search_cv.fit(X_train, y_train, epochs=100, validation_data=(X_valid, y_valid),
 	                  callbacks=[keras.callbacks.EarlyStopping(patience=10), tensorboard_cb])
 
+	print("Best parameters:")
+	print(rnd_search_cv.best_params_)
+	print("Best score:")
+	print(rnd_search_cv.best_score_)
+
 	# # Build the neural network
 	# model = keras.models.Sequential()
 	# # This takes the 28x28 array of an image and puts each pixel as a single input for this layer. So freaking cool :D
@@ -104,7 +109,7 @@ def get_run_logdir():
 	return os.path.join(root_logdir, run_id)
 
 
-def build_model(n_hidden=1, n_neurons=30, learning_rate=3e-3, input_shape=[8]):
+def build_model(n_hidden=1, n_neurons=30, learning_rate=3e-3, input_shape=[28,28]):
 	model = keras.models.Sequential()
 	model.add(keras.layers.InputLayer(input_shape=input_shape))
 	for layer in range(n_hidden):
