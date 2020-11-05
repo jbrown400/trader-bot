@@ -17,15 +17,26 @@ import playground
 
 if __name__ == '__main__':
 
-	# trading_bot = PyRobot(
-	# 	client_id=CLIENT_ID,
-	# 	redirect_uri=REDIRECT_URI,
-	# 	credentials_path=JSON_PATH,
-	# 	paper_trading=True
-	# )
+	trading_bot = PyRobot(
+		client_id=CLIENT_ID,
+		redirect_uri=REDIRECT_URI,
+		credentials_path=JSON_PATH,
+		paper_trading=True
+	)
 
-	playground.main()
+	streaming_client = trading_bot.session.create_streaming_session()
 
+	streaming_client.write_behavior(
+		write='csv',
+		file_path="./data/CCL_data.csv",
+		append_mode=True
+	)
+	streaming_client.quality_of_service(qos_level='moderate')
+	# streaming_client.level_one_quotes(symbols=["CCL"], fields=list(range(0, 50)))
+	streaming_client.level_one_quotes(symbols=["CCL"], fields=list([3]))
+	streaming_client.stream()
+
+	# playground.main()
 
 
 	# trading_robot_portfolio = trading_bot.create_portfolio()
@@ -38,10 +49,10 @@ if __name__ == '__main__':
 	# start_date = end_date - timedelta(days=100)
 	#
 	# trading_robot_portfolio.add_position(
-	# 	symbol='MSFT',
+	# 	symbol='CCL',
 	# 	asset_type='equity',
 	# )
-	#
+
 	# today_data = trading_bot.grab_historical_prices(
 	# 	start=start_date,
 	# 	end=end_date,
@@ -52,7 +63,7 @@ if __name__ == '__main__':
 	# stock_frame = trading_bot.create_stock_frame(
 	# 	data=today_data['aggregated']
 	# )
-	#
+
 	# stock_frame.frame.to_csv('./data/MSFT_today.csv', sep=',')
 
 	# pprint.pprint(trading_bot.grab_current_quotes())
