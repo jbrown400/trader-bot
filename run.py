@@ -13,6 +13,7 @@ from pyrobot.indicators import Indicators
 from configs.config import *
 from core.main import Trainer
 import playground
+from core.actions.get_data import *
 
 
 if __name__ == '__main__':
@@ -23,18 +24,24 @@ if __name__ == '__main__':
 		credentials_path=JSON_PATH,
 		paper_trading=True
 	)
-
 	streaming_client = trading_bot.session.create_streaming_session()
-
-	streaming_client.write_behavior(
-		write='csv',
-		file_path="./data/CCL_data.csv",
-		append_mode=True
-	)
 	streaming_client.quality_of_service(qos_level='moderate')
-	# streaming_client.level_one_quotes(symbols=["CCL"], fields=list(range(0, 50)))
-	streaming_client.level_one_quotes(symbols=["CCL"], fields=list([3]))
-	streaming_client.stream()
+	streaming_client.level_one_quotes(symbols=["CCL"], fields=list(range(0, 15)))
+
+	asyncio.run(data_pipeline(streaming_client))
+
+	# streaming_client = trading_bot.session.create_streaming_session()
+
+	# streaming_client.write_behavior(
+	# 	write='csv',
+	# 	file_path="./data/CCL_data.csv",
+	# 	append_mode=True
+	# )
+	# streaming_client.quality_of_service(qos_level='express')
+	# streaming_client.level_one_quotes(symbols=["CCL"], fields=list(range(0, 15)))
+	# streaming_client.level_one_quotes(symbols=["CCL"], fields=["1"])
+	# streaming_client.stream()
+	# streaming_client.start_pipeline()
 
 	# playground.main()
 
