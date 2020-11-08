@@ -13,9 +13,13 @@ from sklearn.preprocessing import StandardScaler
 
 from scipy.stats import reciprocal
 from sklearn.model_selection import RandomizedSearchCV
+from datetime import datetime
 
 import os
 root_logdir = os.path.join(os.curdir, "my_logs")
 
+
 def main():
-	pass
+	milli = datetime.strptime('2020-09-21 08:00:00', '%Y-%m-%d %H:%M:%S').timestamp() * 1000
+
+	print(milli)

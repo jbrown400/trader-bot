@@ -22,7 +22,16 @@ async def data_pipeline(streaming_client):
 			pass
 
 
-def get_data():
+def parse_into_data_frame(response_dict):
+	"""
+	Takes a quote response dictionary and inserts the data
+	  into a pandas data frame
+
+	:return:
+	"""
+
+
+def get_historical_data():
 	"""
 	Gets the raw data from the TD API, filters it, parses the relevant data,
 	  then saves the cleaned data into the corresponding security's data file
@@ -30,7 +39,7 @@ def get_data():
 
 	:return:
 	"""
-	pass
+
 
 
 
