@@ -45,7 +45,6 @@ def get_historical_data():
 
 
 
-# todo I may need to put this on a cron job so I don't have data gaps...
 def get_yesterday_data():
 	"""
 	Loops through all security symbol's data files, uses the last entry's timestamp as the starting time and
