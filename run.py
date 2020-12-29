@@ -27,6 +27,7 @@ if __name__ == '__main__':
 		client_id=CLIENT_ID,
 		redirect_uri=REDIRECT_URI,
 		credentials_path=JSON_PATH,
+		trading_account=ACCOUNT_NUMBER,
 		paper_trading=False
 	)
 
