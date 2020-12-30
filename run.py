@@ -28,12 +28,12 @@ if __name__ == '__main__':
 		redirect_uri=REDIRECT_URI,
 		credentials_path=JSON_PATH,
 		trading_account=ACCOUNT_NUMBER,
-		paper_trading=False
+		paper_trading=True
 	)
 
 	trading_robot_portfolio = trading_robot.create_portfolio()
 
-	trading_symbol = 'F'
+	trading_symbol = 'AAPL'
 
 	# print("Pre market open: ", trading_robot.pre_market_open)
 	# print("Regular market open: ", trading_robot.regular_market_open)
@@ -69,7 +69,7 @@ if __name__ == '__main__':
 	# Create new indicator client
 	indicator_client = Indicators(price_data_frame=stock_frame)
 	indicator_client.ema(period=20, column_name='ema_20')
-	indicator_client.ema(period=20, column_name='ema_200')
+	indicator_client.ema(period=200, column_name='ema_200')
 	# indicator_client.rsi(period=10)
 
 	# Add a Signal Check
@@ -86,7 +86,7 @@ if __name__ == '__main__':
 		enter_or_exit='enter',
 		long_or_short='long',
 		price=9.00,
-		order_type='lmt'
+		order_type='mkt'
 	)
 
 	# Add an Order Leg
@@ -141,86 +141,86 @@ if __name__ == '__main__':
 	# Initialize order variable
 	order = None
 
-	signals = indicator_client.check_signals()
+	# signals = indicator_client.check_signals()
 
 	# Execute trade
-	trading_robot.execute_signals(
-		signals=signals,
-		trades_to_execute=trades_dict
-	)
-
-	ownership_dict[trading_symbol] = True
-	order: Trade = trades_dict[trading_symbol]['buy']['trade_func']
+	# trading_robot.execute_signals(
+	# 	signals=signals,
+	# 	trades_to_execute=trades_dict
+	# )
+	#
+	# ownership_dict[trading_symbol] = True
+	# order: Trade = trades_dict[trading_symbol]['buy']['trade_func']
 
 	#########################################
 
-	# while trading_bot.regular_market_open:
-	# while True:
-	# 	# Grab the latest bar
-	# 	latest_bars = trading_robot.get_latest_bar()
-	# 	# Add to the stock frame
-	# 	stock_frame.add_rows(data=latest_bars)
-	#
-	# 	# Refresh the indicators
-	# 	indicator_client.refresh()
-	#
-	# 	print("="*50)
-	# 	print("Current Stock Frame: ")
-	# 	print("-"*50)
-	# 	print(stock_frame.symbol_groups.tail())
-	# 	print("-"*50)
-	# 	print("")
-	#
-	# 	# Check for the signals
-	# 	signals = indicator_client.check_signals()
-	#
-	# 	# Define the buy and sell
-	# 	buys = signals['buys'].to_list()
-	# 	sells = signals['sells'].to_list()
-	#
-	# 	print("=" * 50)
-	# 	print("Current Signals: ")
-	# 	print("-" * 50)
-	# 	# print("Symbol: {}".format(list(trades_dict.keys())[0]))
-	# 	print("Symbol: {}".format(trading_symbol))
-	# 	print("Ownership Status: {}".format(ownership_dict[trading_symbol]))
-	# 	print("Buy signals: {}".format(buys))
-	# 	print("Sell Signals: {}".format(sells))
-	# 	print(stock_frame.symbol_groups.tail())
-	# 	print("-" * 50)
-	# 	print("")
-	#
-	# 	# Buy or Sell!!!
-	# 	if ownership_dict[trading_symbol] is False and buys:
-	#
-	# 		# Execute trade
-	# 		trading_robot.execute_signals(
-	# 			signals=signals,
-	# 			trades_to_execute=trades_dict
-	# 		)
-	#
-	# 		ownership_dict[trading_symbol] = True
-	# 		order: Trade = trades_dict[trading_symbol]['buy']['trade_func']
-	#
-	# 	elif ownership_dict[trading_symbol] is True and sells:
-	#
-	# 		# Execute trade
-	# 		trading_robot.execute_signals(
-	# 			signals=signals,
-	# 			trades_to_execute=trades_dict
-	# 		)
-	#
-	# 		ownership_dict[trading_symbol] = False
-	# 		order: Trade = trades_dict[trading_symbol]['sell']['trade_func']
-	#
-	# 	# Grab the last row
-	# 	last_row = trading_robot.stock_frame.frame.tail(n=1)
-	#
-	# 	# Grab the last bar timestamp
-	# 	last_bar_timestamp = last_row.index.get_level_values(1)
-	#
-	# 	# Wait till the next bar
-	# 	trading_robot.wait_till_next_bar(last_bar_timestamp=last_bar_timestamp)
+	# while trading_robot.regular_market_open:
+	while True:
+		# Grab the latest bar
+		latest_bars = trading_robot.get_latest_bar()
+		# Add to the stock frame
+		stock_frame.add_rows(data=latest_bars)
+
+		# Refresh the indicators
+		indicator_client.refresh()
+
+		print("="*50)
+		print("Current Stock Frame: ")
+		print("-"*50)
+		print(stock_frame.symbol_groups.tail())
+		print("-"*50)
+		print("")
+
+		# Check for the signals
+		signals = indicator_client.check_signals()
+
+		# Define the buy and sell
+		buys = signals['buys'].to_list()
+		sells = signals['sells'].to_list()
+
+		print("=" * 50)
+		print("Current Signals: ")
+		print("-" * 50)
+		# print("Symbol: {}".format(list(trades_dict.keys())[0]))
+		print("Symbol: {}".format(trading_symbol))
+		print("Ownership Status: {}".format(ownership_dict[trading_symbol]))
+		print("Buy signals: {}".format(buys))
+		print("Sell Signals: {}".format(sells))
+		print(stock_frame.symbol_groups.tail())
+		print("-" * 50)
+		print("")
+
+		# Buy or Sell!!!
+		if ownership_dict[trading_symbol] is False and buys:
+
+			# Execute trade
+			trading_robot.execute_signals(
+				signals=signals,
+				trades_to_execute=trades_dict
+			)
+
+			ownership_dict[trading_symbol] = True
+			order: Trade = trades_dict[trading_symbol]['buy']['trade_func']
+
+		elif ownership_dict[trading_symbol] is True and sells:
+
+			# Execute trade
+			trading_robot.execute_signals(
+				signals=signals,
+				trades_to_execute=trades_dict
+			)
+
+			ownership_dict[trading_symbol] = False
+			order: Trade = trades_dict[trading_symbol]['sell']['trade_func']
+
+		# Grab the last row
+		last_row = trading_robot.stock_frame.frame.tail(n=1)
+
+		# Grab the last bar timestamp
+		last_bar_timestamp = last_row.index.get_level_values(1)
+
+		# Wait till the next bar
+		trading_robot.wait_till_next_bar(last_bar_timestamp=last_bar_timestamp)
 
 	# stock_frame.frame.to_csv('./data/TSLA_data.csv', mode='a', sep=',')
 
