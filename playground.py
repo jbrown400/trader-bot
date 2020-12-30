@@ -23,3 +23,20 @@ def main():
 	milli = datetime.strptime('2020-09-21 08:00:00', '%Y-%m-%d %H:%M:%S').timestamp() * 1000
 
 	print(milli)
+
+# stock_frame.frame.to_csv('./data/TSLA_data.csv', mode='a', sep=',')
+# streaming_client = trading_bot.session.create_streaming_session()
+# streaming_client.quality_of_service(qos_level='moderate')
+# streaming_client.level_one_quotes(symbols=["CCL"], fields=list(range(0, 15)))
+#
+# asyncio.run(data_pipeline(streaming_client))
+
+# playground.main()
+
+# with open('./data/TSLA_data.csv', 'a') as f:
+# 	stock_frame.frame.to_csv(f, header=False)
+# stock_frame.frame.to_csv('./data/TSLA_data.csv', mode='a', sep=',')
+
+# pprint.pprint(stock_frame)
+
+# pprint.pprint(trading_bot.grab_current_quotes())

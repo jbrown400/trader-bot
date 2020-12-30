@@ -14,9 +14,9 @@ from pyrobot.robot import PyRobot
 from pyrobot.robot import Trade
 from pyrobot.indicators import Indicators
 from configs.config import *
-from core.main import Trainer
-import playground
-from core.actions.get_data import *
+from core.utils import *
+
+from strategies.conf_val import conf_val
 
 # todo Check if orders were filled before trying to sell
 
@@ -31,13 +31,16 @@ if __name__ == '__main__':
 		paper_trading=True
 	)
 
+	bot_account = trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)
+	pprint.pprint(bot_account)
+
+	print("Pre market open: ", trading_robot.pre_market_open)
+	print("Regular market open: ", trading_robot.regular_market_open)
+	print("Post market open: ", trading_robot.post_market_open)
+
 	trading_robot_portfolio = trading_robot.create_portfolio()
 
 	trading_symbol = 'AAPL'
-
-	# print("Pre market open: ", trading_robot.pre_market_open)
-	# print("Regular market open: ", trading_robot.regular_market_open)
-	# print("Post market open: ", trading_robot.post_market_open)
 
 	trading_robot_portfolio.add_position(
 		symbol=trading_symbol,
@@ -45,47 +48,19 @@ if __name__ == '__main__':
 		asset_type='equity',
 	)
 
-	end_date = datetime.today()
-	# end_date = datetime.fromtimestamp(1600693200000/1000)
-	start_date = end_date - timedelta(days=20)
-
-	# Get historical data
-	historical_prices = trading_robot.grab_historical_prices(
-		start=start_date,
-		end=end_date,
-		bar_size=1,
-		bar_type='minute'
-	)
-
-	# Convert data to a stock frame
-	stock_frame = trading_robot.create_stock_frame(
-		data=historical_prices['aggregated']
-	)
-
-	# Add the stock frame to the portfolio
-	trading_robot.portfolio.stock_frame = stock_frame
-	trading_robot.portfolio.historical_prices = historical_prices
+	# Set historical prices for current positions
+	set_historical_prices(trading_robot)
 
 	# Create new indicator client
-	indicator_client = Indicators(price_data_frame=stock_frame)
-	indicator_client.ema(period=20, column_name='ema_20')
-	indicator_client.ema(period=200, column_name='ema_200')
-	# indicator_client.rsi(period=10)
-
-	# Add a Signal Check
-	indicator_client.set_indicator_signal_compare(
-		indicator_1='ema_20',
-		indicator_2='ema_200',
-		condition_buy=operator.ge,
-		condition_sell=operator.le
-	)
+	indicator_client = Indicators(price_data_frame=trading_robot.portfolio.stock_frame)
+	# Set the confirmation validation strategy
+	conf_val(trading_robot, indicator_client)
 
 	# Create a new Trade Object for Entering position
 	new_enter_trade = trading_robot.create_trade(
 		trade_id='long_enter',
 		enter_or_exit='enter',
 		long_or_short='long',
-		price=9.00,
 		order_type='mkt'
 	)
 
@@ -125,13 +100,6 @@ if __name__ == '__main__':
 		}
 	}
 
-	# trades_dict = {
-	# 	'MSFT': {
-	# 		'trade_func': trading_robot.trades['long_msft'],
-	# 		'trade_id': trading_robot.trades['long_msft'].trade_id
-	# 	}
-	# }
-
 	# Define the ownership
 	# todo Check if I already own the stock when I startup
 	ownership_dict = {
@@ -159,17 +127,11 @@ if __name__ == '__main__':
 		# Grab the latest bar
 		latest_bars = trading_robot.get_latest_bar()
 		# Add to the stock frame
-		stock_frame.add_rows(data=latest_bars)
+		trading_robot.portfolio.stock_frame.add_rows(data=latest_bars)
 
 		# Refresh the indicators
 		indicator_client.refresh()
-
-		print("="*50)
-		print("Current Stock Frame: ")
-		print("-"*50)
-		print(stock_frame.symbol_groups.tail())
-		print("-"*50)
-		print("")
+		# print_step(trading_robot, indicator_client)
 
 		# Check for the signals
 		signals = indicator_client.check_signals()
@@ -184,9 +146,9 @@ if __name__ == '__main__':
 		# print("Symbol: {}".format(list(trades_dict.keys())[0]))
 		print("Symbol: {}".format(trading_symbol))
 		print("Ownership Status: {}".format(ownership_dict[trading_symbol]))
-		print("Buy signals: {}".format(buys))
-		print("Sell Signals: {}".format(sells))
-		print(stock_frame.symbol_groups.tail())
+		print(f"Buy signals: {bcolors.OKGREEN}{buys}{bcolors.ENDC}")
+		print(f"Sell Signals: {bcolors.FAIL}{sells}{bcolors.ENDC}")
+		print(trading_robot.portfolio.stock_frame.symbol_groups.tail(n=3))
 		print("-" * 50)
 		print("")
 
@@ -222,20 +184,3 @@ if __name__ == '__main__':
 		# Wait till the next bar
 		trading_robot.wait_till_next_bar(last_bar_timestamp=last_bar_timestamp)
 
-	# stock_frame.frame.to_csv('./data/TSLA_data.csv', mode='a', sep=',')
-
-	# streaming_client = trading_bot.session.create_streaming_session()
-	# streaming_client.quality_of_service(qos_level='moderate')
-	# streaming_client.level_one_quotes(symbols=["CCL"], fields=list(range(0, 15)))
-	#
-	# asyncio.run(data_pipeline(streaming_client))
-
-	# playground.main()
-
-	# with open('./data/TSLA_data.csv', 'a') as f:
-	# 	stock_frame.frame.to_csv(f, header=False)
-	# stock_frame.frame.to_csv('./data/TSLA_data.csv', mode='a', sep=',')
-
-	# pprint.pprint(stock_frame)
-
-	# pprint.pprint(trading_bot.grab_current_quotes())
