@@ -16,7 +16,7 @@ from pyrobot.indicators import Indicators
 from configs.config import *
 from core.utils import *
 
-from strategies.conf_val import conf_val
+from strategies import conf_val
 
 # todo Check if orders were filled before trying to sell
 
@@ -54,7 +54,9 @@ if __name__ == '__main__':
 	# Create new indicator client
 	indicator_client = Indicators(price_data_frame=trading_robot.portfolio.stock_frame)
 	# Set the confirmation validation strategy
-	conf_val(trading_robot, indicator_client)
+	conf_val.define_strat(trading_robot, indicator_client)
+	pd.set_option('display.max_columns', None)
+	print(indicator_client.price_data_frame)
 
 	# Create a new Trade Object for Entering position
 	new_enter_trade = trading_robot.create_trade(
@@ -125,9 +127,9 @@ if __name__ == '__main__':
 	# while trading_robot.regular_market_open:
 	while True:
 		# Grab the latest bar
-		latest_bars = trading_robot.get_latest_bar()
+		# latest_bars = trading_robot.get_latest_bar()
 		# Add to the stock frame
-		trading_robot.portfolio.stock_frame.add_rows(data=latest_bars)
+		# trading_robot.portfolio.stock_frame.add_rows(data=latest_bars)
 
 		# Refresh the indicators
 		indicator_client.refresh()
@@ -136,7 +138,9 @@ if __name__ == '__main__':
 		# Check for the signals
 		signals = indicator_client.check_signals()
 
-		# Define the buy and sell
+		# Define the buy and sell signals
+		signals = conf_val.define_signals(indicator_client, ownership_dict[trading_symbol])
+
 		buys = signals['buys'].to_list()
 		sells = signals['sells'].to_list()
 
