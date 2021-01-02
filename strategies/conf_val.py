@@ -15,18 +15,10 @@ def conf_val(trading_robot: PyRobot, indicator_client: Indicators):
 	indicator_client.ema(period=20, column_name='ema_20')
 	indicator_client.ema(period=200, column_name='ema_200')
 
-	# Add a Signal Check for price above ema 20
-	indicator_client.set_indicator_signal_compare(
-		indicator_1='open',
-		indicator_2='ema_20',
-		condition_buy=operator.ge,
-		condition_sell=operator.le
-	)
 
-	# Add a signal check to make sure we're in an uptrend
-	indicator_client.set_indicator_signal_compare(
-		indicator_1='ema_20',
-		indicator_2='ema_200',
-		condition_buy=operator.ge,
-		condition_sell=operator.le
-	)
+# def criteria_met() -> bool:
+# 	"""Returns whether or not a buy condition is met for the conf_val strat"""
+# 	if True:
+# 		return True
+# 	else:
+# 		return False
