@@ -20,15 +20,23 @@ def define_strat(trading_robot: PyRobot, indicator_client: Indicators):
 	indicator_client.price_data_frame['open_ema_20_percent_diff'] = \
 		((v2 - v1) / abs(v1)) * 100
 
-	indicator_client.set_indicator_signal_compare(
-		indicator_1='open',
-		indicator_2='ema_20',
-		condition_buy=operator.ge,
-		condition_sell=operator.le
-	)
+	# indicator_client.set_indicator_signal_compare(
+	# 	indicator_1='open',
+	# 	indicator_2='ema_20',
+	# 	condition_buy=test_stuff,
+	# 	condition_sell=test_other
+	# )
 
 
-def define_signals(indicator_client: Indicators, owned: bool) -> dict:
+def test_stuff(ind_1, ind_2):
+	return pd.Series(False)
+
+
+def test_other(ind_1, ind_2):
+	return pd.Series(True)
+
+
+def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: str) -> dict:
 	"""Sets buy/sell/hold signals for the conf_val strat"""
 	latest_row = indicator_client.price_data_frame.tail(n=1)
 
@@ -53,13 +61,14 @@ def define_signals(indicator_client: Indicators, owned: bool) -> dict:
 			return signals
 		else:
 			# Sell
-			signals['sells'] = pd.Series([True])
+			signals['sells'] = pd.Series([trading_symbol, True])
 			return signals
 	else:
 		if open_price > ema_20 > ema_200 and \
 				percent_diff > .5 and rsi < 60:
 			# Buy
-			signals['buys'] = pd.Series([True])
+			signals['buys'] = pd.Series([trading_symbol, True])
 			return signals
 		# Wait
+		# signals['buys'] = pd.Series([trading_symbol, True])
 		return signals
