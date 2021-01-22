@@ -23,17 +23,17 @@ def define_strat(trading_robot: PyRobot, indicator_client: Indicators):
 	indicator_client.set_indicator_signal_compare(
 		indicator_1='open',
 		indicator_2='ema_20',
-		condition_buy=operator.gt,
-		condition_sell=operator.le
+		condition_buy=test_stuff,
+		condition_sell=test_other
 	)
 
 
 def test_stuff(ind_1, ind_2):
-	return pd.Series(False)
+	return pd.Series({'hi': True})
 
 
 def test_other(ind_1, ind_2):
-	return pd.Series(True)
+	return pd.Series({})
 
 
 def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: str) -> dict:
@@ -51,7 +51,7 @@ def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: st
 	# todo determine if I need to have these defaulted to False or just empty
 	# todo add the right Series key when marking True for a buy/sell. I think it's the ticker and timestamp
 	signals = {
-		'buys': pd.Series([trading_symbol, [True]]),
+		'buys': pd.Series({trading_symbol: True}),
 		'sells': pd.Series()
 	}
 

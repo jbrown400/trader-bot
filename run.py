@@ -136,10 +136,10 @@ if __name__ == '__main__':
 		# print_step(trading_robot, indicator_client)
 
 		# Check for the signals
-		signals = indicator_client.check_signals()
+		# signals = indicator_client.check_signals()
 
-		print("*"*50)
-		print(signals)
+		# print("*"*50)
+		# print(signals)
 		# Define the buy and sell signals
 		signals = conf_val.define_signals(indicator_client, ownership_dict[trading_symbol], trading_symbol)
 
