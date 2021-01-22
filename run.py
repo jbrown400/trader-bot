@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
 	trading_robot_portfolio = trading_robot.create_portfolio()
 
-	trading_symbol = 'AAPL'
+	trading_symbol = 'NIO'
 
 	trading_robot_portfolio.add_position(
 		symbol=trading_symbol,
@@ -127,17 +127,19 @@ if __name__ == '__main__':
 	# while trading_robot.regular_market_open:
 	while True:
 		# Grab the latest bar
-		# latest_bars = trading_robot.get_latest_bar()
+		latest_bars = trading_robot.get_latest_bar()
 		# Add to the stock frame
-		# trading_robot.portfolio.stock_frame.add_rows(data=latest_bars)
+		trading_robot.portfolio.stock_frame.add_rows(data=latest_bars)
 
 		# Refresh the indicators
 		indicator_client.refresh()
 		# print_step(trading_robot, indicator_client)
 
 		# Check for the signals
-		# signals = indicator_client.check_signals()
+		signals = indicator_client.check_signals()
 
+		print("*"*50)
+		print(signals)
 		# Define the buy and sell signals
 		signals = conf_val.define_signals(indicator_client, ownership_dict[trading_symbol], trading_symbol)
 
