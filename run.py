@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
 	trading_robot_portfolio = trading_robot.create_portfolio()
 
-	trading_symbol = 'NIO'
+	trading_symbol = 'F'
 
 	trading_robot_portfolio.add_position(
 		symbol=trading_symbol,
@@ -141,7 +141,8 @@ if __name__ == '__main__':
 		# print("*"*50)
 		# print(signals)
 		# Define the buy and sell signals
-		signals = conf_val.define_signals(indicator_client, ownership_dict[trading_symbol], trading_symbol)
+		signals = conf_val.define_signals(indicator_client, ownership_dict[trading_symbol],
+		                                  trading_symbol, bot_account)
 
 		buys = signals['buys'].to_list()
 		sells = signals['sells'].to_list()
