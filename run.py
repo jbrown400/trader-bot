@@ -10,15 +10,17 @@ import pandas as pd
 from datetime import datetime
 from datetime import timedelta
 
-from pyrobot.robot import PyRobot
 from pyrobot.robot import Trade
 from pyrobot.indicators import Indicators
 from configs.config import *
-from core.utils import *
+
+from core.utils.general_utils import *
+from core.utils import trade_utils
 
 from strategies import conf_val
 
-# todo Check if orders were filled before trying to sell
+# todo Check if orders were filled (aka I have a position)
+#  before trying to sell
 
 
 if __name__ == '__main__':
@@ -50,13 +52,13 @@ if __name__ == '__main__':
 
 	# Set historical prices for current positions
 	set_historical_prices(trading_robot)
+	# todo create a new dataframe that is cleaned/normalized for the model
 
 	# Create new indicator client
 	indicator_client = Indicators(price_data_frame=trading_robot.portfolio.stock_frame)
 	# Set the confirmation validation strategy
 	conf_val.define_strat(trading_robot, indicator_client)
 	pd.set_option('display.max_columns', None)
-	print(indicator_client.price_data_frame)
 
 	# Create a new Trade Object for Entering position
 	new_enter_trade = trading_robot.create_trade(
@@ -124,8 +126,8 @@ if __name__ == '__main__':
 
 	#########################################
 
-	# while trading_robot.regular_market_open:
-	while True:
+	while trading_robot.regular_market_open:
+	# while True:
 		# Grab the latest bar
 		latest_bars = trading_robot.get_latest_bar()
 		# Add to the stock frame
@@ -133,16 +135,16 @@ if __name__ == '__main__':
 
 		# Refresh the indicators
 		indicator_client.refresh()
-		# print_step(trading_robot, indicator_client)
 
 		# Check for the signals
 		# signals = indicator_client.check_signals()
-
-		# print("*"*50)
-		# print(signals)
 		# Define the buy and sell signals
-		signals = conf_val.define_signals(indicator_client, ownership_dict[trading_symbol],
-		                                  trading_symbol, bot_account)
+		signals = conf_val.define_signals(
+			indicator_client,
+			ownership_dict[trading_symbol],
+			trading_symbol,
+			trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)
+		)
 
 		buys = signals['buys'].to_list()
 		sells = signals['sells'].to_list()
@@ -190,4 +192,19 @@ if __name__ == '__main__':
 
 		# Wait till the next bar
 		trading_robot.wait_till_next_bar(last_bar_timestamp=last_bar_timestamp)
+
+	# Close out of trades for the day
+	if ownership_dict[trading_symbol] is True:
+		signals = trade_utils.sell_out_signal(trading_symbol)
+		trades_to_execute = trade_utils.sell_out_trade_to_execute(
+			trading_symbol,
+			trading_robot
+		)
+		trading_robot.execute_signals(
+			signals=signals,
+			trades_to_execute=trades_to_execute
+		)
+		# Don't need this now but maybe in the future when it
+		#  runs on it's own between days
+		ownership_dict[trading_symbol] = False
 

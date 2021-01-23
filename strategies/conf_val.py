@@ -43,6 +43,10 @@ def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: st
 	indicator_client.price_data_frame['ema_20_ema_200_percent_diff'] = \
 		((v3 - v2) / abs(v2)) * 100
 
+	# todo clean (normalize) latest row
+
+	# todo this is where I would pass the latest row to the ML model
+
 	# Grab the latest row
 	latest_row = indicator_client.price_data_frame.tail(n=1)
 
