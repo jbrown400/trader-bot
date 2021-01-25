@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
 	trading_robot_portfolio = trading_robot.create_portfolio()
 
-	trading_symbol = 'F'
+	trading_symbol = 'AMC'
 
 	trading_robot_portfolio.add_position(
 		symbol=trading_symbol,

@@ -61,8 +61,8 @@ def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: st
 	ema_20_ema_200_percent_diff = latest_row['ema_20_ema_200_percent_diff'][0]
 
 	signals = {
-		'buys': pd.Series({trading_symbol: False}),
-		'sells': pd.Series({trading_symbol: False})
+		'buys': pd.Series(),
+		'sells': pd.Series()
 	}
 
 	if owned:
@@ -77,10 +77,10 @@ def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: st
 		# If a wide gap on confirmation, a low RSI, and the price of the
 		#  security is 80% of my available funds
 		if close_price > open_price > ema_20 > ema_200 and \
-				open_ema_20_percent_diff > .5 and \
-				open_price < (available_funds * .8) and \
-				ema_20_ema_200_percent_diff > .1 and \
+				open_ema_20_percent_diff > .05 and \
+				ema_20_ema_200_percent_diff > .01 and \
 				rsi < 60:
+			# open_price < (available_funds * .8) and \
 			# Buy
 			signals['buys'] = pd.Series({trading_symbol: True})
 			return signals
