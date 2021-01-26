@@ -12,12 +12,13 @@ def define_strat(trading_robot: PyRobot, indicator_client: Indicators):
 	indicator_client.ema(period=200, column_name='ema_200')
 	indicator_client.rsi(period=14)
 
-	# indicator_client.set_indicator_signal_compare(
-	# 	indicator_1='open',
-	# 	indicator_2='ema_20',
-	# 	condition_buy=test_stuff,
-	# 	condition_sell=test_other
-	# )
+
+# indicator_client.set_indicator_signal_compare(
+# 	indicator_1='open',
+# 	indicator_2='ema_20',
+# 	condition_buy=test_stuff,
+# 	condition_sell=test_other
+# )
 
 
 def test_stuff(ind_1, ind_2):
@@ -39,9 +40,9 @@ def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: st
 	v2 = indicator_client.price_data_frame['ema_20']
 	v3 = indicator_client.price_data_frame['ema_200']
 	indicator_client.price_data_frame['open_ema_20_percent_diff'] = \
-		((v2 - v1) / abs(v1)) * 100
+		((v1 - v2) / abs(v2)) * 100
 	indicator_client.price_data_frame['ema_20_ema_200_percent_diff'] = \
-		((v3 - v2) / abs(v2)) * 100
+		((v2 - v3) / abs(v3)) * 100
 
 	# todo clean (normalize) latest row
 
@@ -74,12 +75,20 @@ def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: st
 			signals['sells'] = pd.Series({trading_symbol: True})
 			return signals
 	else:
+		a = close_price > open_price > ema_20 > ema_200
+		b = open_ema_20_percent_diff > 1
+		c = ema_20_ema_200_percent_diff > 2
+		d = rsi < 60
+
+		print("A: ", a)
+		print("B: ", b)
+		print("C: ", c)
+		print("D: ", d)
 		# If a wide gap on confirmation, a low RSI, and the price of the
 		#  security is 80% of my available funds
-		if close_price > open_price > ema_20 > ema_200 and \
-				open_ema_20_percent_diff > .05 and \
-				ema_20_ema_200_percent_diff > .01 and \
-				rsi < 60:
+		if a and \
+				b and \
+				c:
 			# open_price < (available_funds * .8) and \
 			# Buy
 			signals['buys'] = pd.Series({trading_symbol: True})
