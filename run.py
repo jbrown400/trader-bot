@@ -44,11 +44,11 @@ if __name__ == '__main__':
 
 	trading_symbol = 'CCIV'
 
-	# trading_robot_portfolio.add_position(
-	# 	symbol=trading_symbol,
-	# 	quantity=1,
-	# 	asset_type='equity',
-	# )
+	trading_robot_portfolio.add_position(
+		symbol=trading_symbol,
+		quantity=1,
+		asset_type='equity',
+	)
 
 	# Set historical prices for current positions
 	set_historical_prices(trading_robot)
@@ -61,48 +61,48 @@ if __name__ == '__main__':
 	pd.set_option('display.max_columns', None)
 
 	# Create a new Trade Object for Entering position
-	new_enter_trade = trading_robot.create_trade(
-		trade_id='long_enter',
-		enter_or_exit='enter',
-		long_or_short='long',
-		order_type='mkt'
-	)
-
-	# Add an Order Leg
-	new_enter_trade.instrument(
-		symbol=trading_symbol,
-		quantity=1,
-		asset_type='EQUITY'
-	)
-
-	# Create a new Trade Object for Exiting position
-	new_exit_trade = trading_robot.create_trade(
-		trade_id='long_exit',
-		enter_or_exit='exit',
-		long_or_short='long',
-		order_type='mkt'
-	)
-
-	# Add an Order Leg
-	new_exit_trade.instrument(
-		symbol=trading_symbol,
-		quantity=1,
-		asset_type='EQUITY'
-	)
+	# new_enter_trade = trading_robot.create_trade(
+	# 	trade_id='long_enter',
+	# 	enter_or_exit='enter',
+	# 	long_or_short='long',
+	# 	order_type='mkt'
+	# )
+	#
+	# # Add an Order Leg
+	# new_enter_trade.instrument(
+	# 	symbol=trading_symbol,
+	# 	quantity=1,
+	# 	asset_type='EQUITY'
+	# )
+	#
+	# # Create a new Trade Object for Exiting position
+	# new_exit_trade = trading_robot.create_trade(
+	# 	trade_id='long_exit',
+	# 	enter_or_exit='exit',
+	# 	long_or_short='long',
+	# 	order_type='mkt'
+	# )
+	#
+	# # Add an Order Leg
+	# new_exit_trade.instrument(
+	# 	symbol=trading_symbol,
+	# 	quantity=1,
+	# 	asset_type='EQUITY'
+	# )
 
 	# Define a trading dictionary
-	trades_dict = {
-		trading_symbol: {
-			'buy': {
-				'trade_func': trading_robot.trades['long_enter'],
-				'trade_id': trading_robot.trades['long_enter'].trade_id
-			},
-			'sell': {
-				'trade_func': trading_robot.trades['long_exit'],
-				'trade_id': trading_robot.trades['long_exit'].trade_id
-			},
-		}
-	}
+	# trades_dict = {
+	# 	trading_symbol: {
+	# 		'buy': {
+	# 			'trade_func': trading_robot.trades['long_enter'],
+	# 			'trade_id': trading_robot.trades['long_enter'].trade_id
+	# 		},
+	# 		'sell': {
+	# 			'trade_func': trading_robot.trades['long_exit'],
+	# 			'trade_id': trading_robot.trades['long_exit'].trade_id
+	# 		},
+	# 	}
+	# }
 
 	# Define the ownership
 	# todo Check if I already own the stock when I startup
@@ -127,11 +127,18 @@ if __name__ == '__main__':
 	#########################################
 
 	while trading_robot.regular_market_open:
-	# while True:
+		# while True:
 		# Grab the latest bar
 		latest_bars = trading_robot.get_latest_bar()
 		# Add to the stock frame
 		trading_robot.portfolio.stock_frame.add_rows(data=latest_bars)
+
+		# Set order legs
+		trades_dict = set_trade(trading_robot,
+		                        trading_symbol,
+		                        .5,
+		                        indicator_client.price_data_frame['open'],
+		                        trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)[0]['available_funds'])
 
 		# Refresh the indicators
 		indicator_client.refresh()
@@ -207,4 +214,3 @@ if __name__ == '__main__':
 		# Don't need this now but maybe in the future when it
 		#  runs on it's own between days
 		ownership_dict[trading_symbol] = False
-

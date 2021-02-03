@@ -58,3 +58,63 @@ def set_historical_prices(trading_robot: PyRobot):
 	# Add the stock frame to the portfolio
 	trading_robot.portfolio.stock_frame = stock_frame
 	trading_robot.portfolio.historical_prices = historical_prices
+
+
+def set_trade(trading_robot: PyRobot, trading_symbol: str,
+              max_percent: float,
+              current_price: int,
+              available_funds) -> dict:
+	"""
+	Create order legs and set the qty based on how much of my portfolio
+	  I want to trade at one time
+	:param trading_robot: the robot
+	:param trading_symbol: the ticker symbol for the trades
+	:param max_percent: max percentage of my portfolio I want for a single trade
+	:param current_price: current candle open price
+	:param available_funds: current amount I can trade with
+	:return: trade dictionary
+	"""
+
+	qty = round((available_funds * max_percent) / current_price) if max_percent is not None else 1
+
+	new_enter_trade = trading_robot.create_trade(
+		trade_id='long_enter',
+		enter_or_exit='enter',
+		long_or_short='long',
+		order_type='mkt'
+	)
+
+	# Add an Order Leg
+	new_enter_trade.instrument(
+		symbol=trading_symbol,
+		quantity=qty,
+		asset_type='EQUITY'
+	)
+
+	# Create a new Trade Object for Exiting position
+	new_exit_trade = trading_robot.create_trade(
+		trade_id='long_exit',
+		enter_or_exit='exit',
+		long_or_short='long',
+		order_type='mkt'
+	)
+
+	# Add an Order Leg
+	new_exit_trade.instrument(
+		symbol=trading_symbol,
+		quantity=qty,
+		asset_type='EQUITY'
+	)
+
+	return {
+		trading_symbol: {
+			'buy': {
+				'trade_func': trading_robot.trades['long_enter'],
+				'trade_id': trading_robot.trades['long_enter'].trade_id
+			},
+			'sell': {
+				'trade_func': trading_robot.trades['long_exit'],
+				'trade_id': trading_robot.trades['long_exit'].trade_id
+			},
+		}
+	}
