@@ -42,13 +42,13 @@ if __name__ == '__main__':
 
 	trading_robot_portfolio = trading_robot.create_portfolio()
 
-	trading_symbol = 'AMC'
+	trading_symbol = 'CCIV'
 
-	trading_robot_portfolio.add_position(
-		symbol=trading_symbol,
-		quantity=1,
-		asset_type='equity',
-	)
+	# trading_robot_portfolio.add_position(
+	# 	symbol=trading_symbol,
+	# 	quantity=1,
+	# 	asset_type='equity',
+	# )
 
 	# Set historical prices for current positions
 	set_historical_prices(trading_robot)
