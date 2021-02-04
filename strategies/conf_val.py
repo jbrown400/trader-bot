@@ -77,7 +77,7 @@ def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: st
 	else:
 		a = close_price > open_price > ema_20 > ema_200
 		b = open_ema_20_percent_diff > .5
-		c = ema_20_ema_200_percent_diff > .5
+		c = ema_20_ema_200_percent_diff > .1
 		d = rsi < 60
 
 		print("A: ", a)

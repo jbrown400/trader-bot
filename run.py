@@ -136,9 +136,9 @@ if __name__ == '__main__':
 		# Set order legs
 		trades_dict = set_trade(trading_robot,
 		                        trading_symbol,
-		                        .5,
 		                        indicator_client.price_data_frame['open'],
-		                        trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)[0]['available_funds'])
+		                        trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)[0]['available_funds'],
+		                        .5)
 
 		# Refresh the indicators
 		indicator_client.refresh()

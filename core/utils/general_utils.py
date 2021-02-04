@@ -61,9 +61,9 @@ def set_historical_prices(trading_robot: PyRobot):
 
 
 def set_trade(trading_robot: PyRobot, trading_symbol: str,
-              max_percent: float,
               current_price: int,
-              available_funds) -> dict:
+              available_funds,
+              max_percent: float = None) -> dict:
 	"""
 	Create order legs and set the qty based on how much of my portfolio
 	  I want to trade at one time
@@ -75,7 +75,7 @@ def set_trade(trading_robot: PyRobot, trading_symbol: str,
 	:return: trade dictionary
 	"""
 
-	qty = round((available_funds * max_percent) / current_price) if max_percent is not None else 1
+	qty = round((available_funds * max_percent) / current_price) if max_percent else 1
 
 	new_enter_trade = trading_robot.create_trade(
 		trade_id='long_enter',
