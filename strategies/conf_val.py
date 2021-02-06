@@ -52,7 +52,7 @@ def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: st
 	latest_row = indicator_client.price_data_frame.tail(n=1)
 
 	# todo use a better method for accessing these values than [0]
-	available_funds = bot_account[0]['available_funds']
+	available_funds = bot_account[0]['cash_available_for_trading']
 	open_price = latest_row['open'][0]
 	close_price = latest_row['close'][0]
 	ema_20 = latest_row['ema_20'][0]

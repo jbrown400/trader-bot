@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
 	trading_robot_portfolio = trading_robot.create_portfolio()
 
-	trading_symbol = 'CCIV'
+	trading_symbol = 'SUNW'
 
 	trading_robot_portfolio.add_position(
 		symbol=trading_symbol,
@@ -136,8 +136,8 @@ if __name__ == '__main__':
 		# Set order legs
 		trades_dict = set_trade(trading_robot,
 		                        trading_symbol,
-		                        indicator_client.price_data_frame['open'],
-		                        trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)[0]['available_funds'],
+		                        indicator_client.price_data_frame['open'][0],
+		                        trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)[0]['cash_available_for_trading'],
 		                        .5)
 
 		# Refresh the indicators
