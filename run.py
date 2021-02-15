@@ -33,7 +33,8 @@ if __name__ == '__main__':
 		paper_trading=True
 	)
 
-	bot_account = trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)
+	bot_account = trading_robot.get_accounts(account_number=ACCOUNT_NUMBER, all_accounts=True)
+	positions = trading_robot.get_positions(account_number='232095227')
 	pprint.pprint(bot_account)
 
 	print("Pre market open: ", trading_robot.pre_market_open)
