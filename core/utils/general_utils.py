@@ -35,8 +35,7 @@ def set_historical_prices(trading_robot: PyRobot):
 	"""
 		Set the historical prices for the robot
 
-		Arguments:
-			trading_robot {PyRobot} -- The trading robot class
+		:param trading_robot {PyRobot} -- The trading robot class
 	"""
 
 	end_date = datetime.today()

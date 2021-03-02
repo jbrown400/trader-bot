@@ -14,6 +14,9 @@ from pyrobot.robot import Trade
 from pyrobot.indicators import Indicators
 from configs.config import *
 
+from typing import List
+from typing import Dict
+
 from core.utils.general_utils import *
 from core.utils import trade_utils
 
@@ -24,6 +27,9 @@ from strategies import conf_val
 
 
 if __name__ == '__main__':
+
+	# Hyper parameters
+
 
 	trading_robot = PyRobot(
 		client_id=CLIENT_ID,
