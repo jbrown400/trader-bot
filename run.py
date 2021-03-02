@@ -14,6 +14,9 @@ from pyrobot.robot import Trade
 from pyrobot.indicators import Indicators
 from configs.config import *
 
+from typing import List
+from typing import Dict
+
 from core.utils.general_utils import *
 from core.utils import trade_utils
 
@@ -25,6 +28,9 @@ from strategies import conf_val
 
 if __name__ == '__main__':
 
+	# Hyper parameters
+
+
 	trading_robot = PyRobot(
 		client_id=CLIENT_ID,
 		redirect_uri=REDIRECT_URI,
@@ -33,8 +39,8 @@ if __name__ == '__main__':
 		paper_trading=True
 	)
 
-	bot_account = trading_robot.get_accounts(account_number=ACCOUNT_NUMBER, all_accounts=True)
-	positions = trading_robot.get_positions(account_number='232095227')
+	bot_account: dict = trading_robot.get_accounts(account_number=ACCOUNT_NUMBER, all_accounts=True)
+	positions: List[Dict] = trading_robot.get_positions(account_number='232095227')
 	pprint.pprint(bot_account)
 
 	print("Pre market open: ", trading_robot.pre_market_open)
