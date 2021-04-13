@@ -22,6 +22,8 @@ from core.utils import trade_utils
 
 from strategies import conf_val
 
+from core.finnhub.finnhub import Finnhub
+
 # todo Check if orders were filled (aka I have a position)
 #  before trying to sell
 
@@ -29,7 +31,7 @@ from strategies import conf_val
 if __name__ == '__main__':
 
 	# Hyper parameters
-
+	Finnhub.get_historical_data('MSFT')
 
 	trading_robot = PyRobot(
 		client_id=CLIENT_ID,
