@@ -18,7 +18,7 @@ def filter_data(raw_data):
 def fill_in_missing_values(method='mean'):
 	"""
 
-	:param method: What to do with missing values (I think
+	:param method: What to do with missing values (I think)
 	:return:
 	"""
 	pass
