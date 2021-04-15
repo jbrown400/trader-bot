@@ -36,7 +36,8 @@ class Finnhub:
 		# todo Add code to create data files if they are not already created
 
 		# Open the file associated with the ticker symbol or create it if it doesn't exist
-		data_file = open(f'./data/ticker/{symbol}/{symbol}_historical_data.csv', 'w')
+		path = f'./data/ticker/{symbol}/{symbol}_historical_data.csv'
+		data_file = open(path, 'w+')
 		writer = csv.writer(data_file, delimiter=',')
 
 		# Write data entries into csv file for cleaning and training
@@ -51,4 +52,5 @@ class Finnhub:
 			# write data to csv
 			writer.writerow(line)
 
+		data_file.close()
 	pass
