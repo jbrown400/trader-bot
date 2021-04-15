@@ -3,6 +3,7 @@ import datetime
 import time
 
 import requests
+from pathlib import Path
 from configs.config import FINNHUB_API_KEY
 
 
@@ -35,8 +36,11 @@ class Finnhub:
 
 		# todo Add code to create data files if they are not already created
 
+		# Create directory if it doesn't exist
+		dir_path = f'./data/ticker/{symbol}/'
+		Path(dir_path).mkdir(parents=True, exist_ok=True)
 		# Open the file associated with the ticker symbol or create it if it doesn't exist
-		path = f'./data/ticker/{symbol}/{symbol}_historical_data.csv'
+		path = f'{dir_path}{symbol}_historical_data.csv'
 		data_file = open(path, 'w+')
 		writer = csv.writer(data_file, delimiter=',')
 

@@ -31,7 +31,7 @@ from core.finnhub.finnhub import Finnhub
 if __name__ == '__main__':
 
 	# Hyper parameters
-	Finnhub.get_historical_data('MSFT')
+	Finnhub.get_historical_data('AAPL')
 
 	trading_robot = PyRobot(
 		client_id=CLIENT_ID,
