@@ -1,4 +1,5 @@
 from pyrobot.robot import PyRobot
+from core.robot import Agent
 
 #todo do I want multiple robots and pit them against each other?
 # yes...so do adversarial training and then pick the best one each month..?
@@ -15,6 +16,20 @@ class Robot:
 	             trading_account: str = None):
 		self.py_robot = PyRobot(client_id, redirect_uri, paper_trading, credentials_path, trading_account)
 		self.tickers = []
+		self.agent: Agent = None
+
+	@property
+	def agent(self):
+		"""
+		Think of the agent like the "brain" of the Robot
+
+		:return: The trained agent that will choose the actions.
+		"""
+		return self.agent
+
+	@agent.setter
+	def agent(self, value: Agent):
+		self._agent = value
 
 	@property
 	def tickers(self):
@@ -31,3 +46,5 @@ class Robot:
 		:return: Performance metric
 		"""
 		return "performance"
+
+

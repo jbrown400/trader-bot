@@ -1,6 +1,6 @@
 """
 Contains functions for cleaning data retrieved remotely
-Note: I think a lot of these actions with be handled by the main libraries
+Note: I think a lot of these actions with be handled by the robot libraries
   but I can perform any extra cleaning steps I need to so everything will
   still be in this file
 """

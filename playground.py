@@ -31,7 +31,7 @@ def main():
 #
 # asyncio.run(data_pipeline(streaming_client))
 
-# playground.main()
+# playground.robot()
 
 # with open('./data/TSLA_data.csv', 'a') as f:
 # 	stock_frame.frame.to_csv(f, header=False)
