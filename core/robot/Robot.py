@@ -47,4 +47,20 @@ class Robot:
 		"""
 		return "performance"
 
+	def get_today_data(self):
+		"""
+		#todo make this run daily after 8pm CST (no more trading)
+		This will pull the most recent day's data, clean it, and save it for later training
+		#todo should I put pre, regular, and post market data in different tables...?
+		:return:
+		"""
+		pass
+
+	def open_real_time_data_connection(self):
+		"""
+		Opens a web socket for the ticker the bot is focused on
+		#todo don't forget to close it when done
+		:return:
+		"""
+
 
