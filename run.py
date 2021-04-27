@@ -17,6 +17,7 @@ from configs.config import *
 from typing import List
 from typing import Dict
 
+from core.robot.Robot import Robot
 from core.utils.general_utils import *
 from core.utils import trade_utils
 
@@ -30,16 +31,19 @@ from core.finnhub.finnhub import Finnhub
 
 if __name__ == '__main__':
 
-	# Hyper parameters
-	Finnhub.get_historical_data('AAPL')
+	# trading_robot = PyRobot(
+	# 	client_id=CLIENT_ID,
+	# 	redirect_uri=REDIRECT_URI,
+	# 	credentials_path=JSON_PATH,
+	# 	trading_account=ACCOUNT_NUMBER,
+	# 	paper_trading=True
+	# )
 
-	trading_robot = PyRobot(
-		client_id=CLIENT_ID,
-		redirect_uri=REDIRECT_URI,
-		credentials_path=JSON_PATH,
-		trading_account=ACCOUNT_NUMBER,
-		paper_trading=True
-	)
+	trading_robot = Robot(client_id=CLIENT_ID,
+	                      redirect_uri=REDIRECT_URI,
+	                      credentials_path=JSON_PATH,
+	                      trading_account=ACCOUNT_NUMBER,
+	                      paper_trading=True)
 
 	bot_account = trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)
 	pprint.pprint(bot_account)

@@ -1,15 +1,19 @@
 from pyrobot.robot import PyRobot
+
+from core.finnhub.finnhub import Finnhub
 from core.robot import Agent
 
-#todo do I want multiple robots and pit them against each other?
-# yes...so do adversarial training and then pick the best one each month..?
+# todo do I want multiple robots and pit them against each other?
+#  yes...so do adversarial training and then pick the best one each month..?
+
 
 class Robot:
 	"""
 	Extends PyRobot class (which contains TD API) to add functionality or quickly implement bug fixes
 	"""
 
-	def __init__(self, client_id: str,
+	def __init__(self,
+	             client_id: str,
 	             redirect_uri: str,
 	             paper_trading: bool = True,
 	             credentials_path: str = None,
@@ -51,6 +55,7 @@ class Robot:
 		"""
 		#todo make this run daily after 8pm CST (no more trading)
 		This will pull the most recent day's data, clean it, and save it for later training
+		(probs pull from both TD and Finnhub)
 		#todo should I put pre, regular, and post market data in different tables...?
 		:return:
 		"""
@@ -62,5 +67,16 @@ class Robot:
 		#todo don't forget to close it when done
 		:return:
 		"""
+		pass
 
+	def prep_new_ticker(self):
+		"""
+		Starts and manages preparing everything we need to do when we see a new ticker we want to trade
+		:return:
+		"""
+		pass
+
+	def get_historical_finnhub_data(self, ticker: str):
+		Finnhub.get_historical_data(ticker)
+		# todo send to cleaner
 

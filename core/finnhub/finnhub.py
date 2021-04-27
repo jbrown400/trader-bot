@@ -12,7 +12,8 @@ class Finnhub:
 	Class that represents the Finnhub API
 	"""
 
-	def get_historical_data(symbol):
+	@staticmethod
+	def get_historical_data(symbol: str):
 		# Times need to be in seconds
 		start_date = 1514786400  # Jan 1 2018
 		current_date = int(round(time.time()))
