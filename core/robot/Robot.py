@@ -7,17 +7,14 @@ from core.robot import Agent
 #  yes...so do adversarial training and then pick the best one each month..?
 
 
-class Robot:
+class Robot(PyRobot):
 	"""
 	Extends PyRobot class (which contains TD API) to add functionality or quickly implement bug fixes
 	"""
 
-	def __init__(self,
-	             client_id: str,
-	             redirect_uri: str,
-	             paper_trading: bool = True,
-	             credentials_path: str = None,
+	def __init__(self, client_id: str, redirect_uri: str, paper_trading: bool = True, credentials_path: str = None,
 	             trading_account: str = None):
+		super().__init__(client_id, redirect_uri, paper_trading, credentials_path, trading_account)
 		self.py_robot = PyRobot(client_id, redirect_uri, paper_trading, credentials_path, trading_account)
 		self.tickers = []
 		self.agent: Agent = None
