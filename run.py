@@ -29,6 +29,7 @@ if __name__ == '__main__':
 
 	bot_account: dict = trading_robot.get_accounts(account_number=ACCOUNT_NUMBER, all_accounts=True)
 
+
 	print("Pre market open: ", trading_robot.pre_market_open)
 	print("Regular market open: ", trading_robot.regular_market_open)
 	print("Post market open: ", trading_robot.post_market_open)
