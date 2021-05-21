@@ -1,11 +1,8 @@
-import pprint
-from typing import Dict
-from typing import List
-
-from pyrobot.indicators import Indicators
-from pyrobot.robot import Trade
+import sys
 
 import psycopg2
+from pyrobot.indicators import Indicators
+from pyrobot.robot import Trade
 
 from configs.config import *
 from core.robot.Robot import Robot
@@ -19,8 +16,21 @@ from strategies import conf_val
 
 if __name__ == '__main__':
 
+	con = None
 
-
+	try:
+		con = psycopg2.connect(database='testdb', user='postgres', password='password')
+		cur = con.cursor()
+		cur.execute('SELECT version()')
+		version = cur.fetchone()[0]
+		print(version)
+	except psycopg2.DatabaseError as e:
+		print(f'Error {e}')
+		sys.exit(1)
+	finally:
+		if con:
+			con.close()
+"""
 	trading_robot = Robot(client_id=CLIENT_ID,
 	                      redirect_uri=REDIRECT_URI,
 	                      credentials_path=JSON_PATH,
@@ -28,7 +38,6 @@ if __name__ == '__main__':
 	                      paper_trading=True)
 
 	bot_account: dict = trading_robot.get_accounts(account_number=ACCOUNT_NUMBER, all_accounts=True)
-
 
 	print("Pre market open: ", trading_robot.pre_market_open)
 	print("Regular market open: ", trading_robot.regular_market_open)
@@ -130,15 +139,17 @@ if __name__ == '__main__':
 		# Set order legs
 		trades_dict = set_trade(trading_robot,
 		                        trading_symbol,
-<<<<<<< HEAD
-		                        indicator_client.price_data_frame['open'],
-		                        trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)[0]['available_funds'],
-=======
-		                        indicator_client.price_data_frame['open'][0],
-		                        trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)[0][
-			                        'cash_available_for_trading'],
->>>>>>> 706820e (More setup/prep)
-		                        .5)
+		              << << << < HEAD
+		indicator_client.price_data_frame['open'],
+		trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)[0]['available_funds'],
+		== == == =
+		indicator_client.price_data_frame['open'][0],
+		trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)[0][
+			'cash_available_for_trading'],
+		>> >> >> > 706820
+		e(More
+		setup / prep)
+		.5)
 
 		# Refresh the indicators
 		indicator_client.refresh()
@@ -214,3 +225,4 @@ if __name__ == '__main__':
 		# Don't need this now but maybe in the future when it
 		#  runs on it's own between days
 		ownership_dict[trading_symbol] = False
+"""
