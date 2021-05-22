@@ -17,11 +17,14 @@ from strategies import conf_val
 if __name__ == '__main__':
 
 	con = None
+	commands = (
+		"""select open from aapl""",
+	)
 
 	try:
-		con = psycopg2.connect(database='testdb', user='postgres', password='password')
+		con = psycopg2.connect(database='justin', user=DB_USER, password=DB_PASSWORD)
 		cur = con.cursor()
-		cur.execute('SELECT version()')
+		cur.execute(commands)
 		version = cur.fetchone()[0]
 		print(version)
 	except psycopg2.DatabaseError as e:
