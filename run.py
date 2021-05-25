@@ -17,14 +17,41 @@ from strategies import conf_val
 if __name__ == '__main__':
 
 	con = None
-	commands = (
-		"""select open from aapl""",
+
+	drop_command = (
+		"""
+		drop table msft
+		"""
+	)
+	create_commands = (
+		"""
+		CREATE TABLE msft (
+			id BIGSERIAL NOT NULL PRIMARY KEY,
+			time_stamp TIMESTAMP NOT NULL,
+			open NUMERIC NOT NULL,
+			close NUMERIC NOT NULL,
+			high NUMERIC NOT NULL,
+			low NUMERIC NOT NULL
+		)
+		"""
+	)
+	insert_commands = (
+		"""
+		INSERT INTO msft (time_stamp, open, close, high, low) 
+					values ('2016-06-22 19:10:25-07', 420, 11, 15, 10.1)
+		"""
+	)
+	select_commands = (
+		"""SELECT open FROM msft"""
 	)
 
 	try:
-		con = psycopg2.connect(database='justin', user=DB_USER, password=DB_PASSWORD)
+		con = psycopg2.connect(database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
 		cur = con.cursor()
-		cur.execute(commands)
+		# cur.execute(drop_command)
+		cur.execute(create_commands)
+		cur.execute(insert_commands)
+		cur.execute(select_commands)
 		version = cur.fetchone()[0]
 		print(version)
 	except psycopg2.DatabaseError as e:
