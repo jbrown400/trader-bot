@@ -17,6 +17,8 @@ class Robot(PyRobot):
 		super().__init__(client_id, redirect_uri, paper_trading, credentials_path, trading_account)
 		self.py_robot = PyRobot(client_id, redirect_uri, paper_trading, credentials_path, trading_account)
 		self.tickers = []
+		#todo uhhh idk if I need to store all data in one table or each ticker in its own table...
+		self.db_table_names = ['rawData', 'processedData', 'models']
 		self.agent: Agent = None
 
 	@property
