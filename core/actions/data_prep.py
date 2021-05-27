@@ -4,9 +4,10 @@ Note: I think a lot of these actions with be handled by the robot libraries
   but I can perform any extra cleaning steps I need to so everything will
   still be in this file
 """
+from core.model.RawStockRecord import RawStockRecord
 
 
-def filter_data(raw_data):
+def filter_data(raw_data: RawStockRecord):
 	"""
 	Filters out data that does not need to be saved to any files and send remaining data to be saved/processed
 	:param raw_data:
