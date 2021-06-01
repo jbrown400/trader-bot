@@ -4,7 +4,7 @@ Note: I think a lot of these actions with be handled by the robot libraries
   but I can perform any extra cleaning steps I need to so everything will
   still be in this file
 """
-from core.model.RawStockRecord import RawStockRecord
+from models.RawStockRecord import RawStockRecord
 
 
 def filter_data(raw_data: RawStockRecord):

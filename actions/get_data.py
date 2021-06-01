@@ -35,7 +35,7 @@ def get_historical_data():
 	"""
 	Gets the raw data from the TD API, filters it, parses the relevant data,
 	  then saves the cleaned data into the corresponding security's data file
-	  and send the data to the model as environment properties to be acted upon
+	  and send the data to the models as environment properties to be acted upon
 
 	:return:
 	"""

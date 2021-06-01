@@ -1,7 +1,8 @@
 from pyrobot.robot import PyRobot
 
-from core.finnhub.finnhub import Finnhub
-from core.robot import Agent
+from network.finnhub.finnhub import Finnhub
+from robot import Agent
+
 
 # todo do I want multiple robots and pit them against each other?
 #  yes...so do adversarial training and then pick the best one each month..?

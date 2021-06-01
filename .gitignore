@@ -4,6 +4,7 @@ configs/*
 data/*
 my_logs/
 **/__pycache__/**
+jupyter_notebooks/
 
 # Files
 .DS_STORE

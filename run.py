@@ -1,14 +1,8 @@
 import sys
 
 import psycopg2
-from pyrobot.indicators import Indicators
-from pyrobot.robot import Trade
 
 from configs.config import *
-from core.robot.Robot import Robot
-from core.utils import trade_utils
-from core.utils.general_utils import *
-from strategies import conf_val
 
 # todo Check if orders were filled (aka I have a position)
 #  before trying to sell
@@ -85,7 +79,7 @@ if __name__ == '__main__':
 
 	# Set historical prices for current positions
 	set_historical_prices(trading_robot)
-	# todo create a new dataframe that is cleaned/normalized for the model
+	# todo create a new dataframe that is cleaned/normalized for the models
 
 	# Create new indicator client
 	indicator_client = Indicators(price_data_frame=trading_robot.portfolio.stock_frame)

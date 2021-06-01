@@ -46,7 +46,7 @@ def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: st
 
 	# todo clean (normalize) latest row
 
-	# todo this is where I would pass the latest row to the ML model
+	# todo this is where I would pass the latest row to the ML models
 
 	# Grab the latest row
 	latest_row = indicator_client.price_data_frame.tail(n=1)
