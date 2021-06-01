@@ -4,6 +4,7 @@ from datetime import timedelta
 
 import psycopg2
 from pyrobot.robot import PyRobot
+from pyrobot.stock_frame import StockFrame
 
 from configs.config import *
 from network.finnhub.finnhub import Finnhub
@@ -108,26 +109,40 @@ class Robot(PyRobot):
 			bar_type='minute'
 		)
 		# todo clean data
+		self.insert_into_db(table=tickers[0],
+		                    stock_frame=self.create_stock_frame(data=historical_prices['aggregated']))
+
+
+	def initialize_db(self):
+		self.db_connection = psycopg2.connect(database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
+
+	def insert_into_db(self, table: str, stock_frame: StockFrame):
+		# todo check if table is available
+		#  create table it if it's not
+
 		try:
 			cursor = self.db_connection.cursor()
 			# create table
 			create_command = f"""
-					CREATE TABLE {tickers[0]} (
-						id BIGSERIAL NOT NULL PRIMARY KEY,
-						time_stamp TIMESTAMP NOT NULL,
+					CREATE TABLE {table} (
+						time_stamp TIMESTAMP NOT NULL PRIMARY KEY,
 						open NUMERIC NOT NULL,
 						close NUMERIC NOT NULL,
 						high NUMERIC NOT NULL,
-						low NUMERIC NOT NULL
+						low NUMERIC NOT NULL,
+						volume NUMERIC NOT NULL
 					)
 					"""
 			cursor.execute(create_command)
 			# print(historical_prices)
 			# start with the first ticker
-			for candle in historical_prices['PLTR']['candles']:
+			for open, close, high, low, volume in stock_frame.frame:
+				# timestamp = str(datetime.fromtimestamp(entry['datetime']//1000.0))
+				print("thing")
 				insert_command = f"""
-					INSERT INTO {tickers[0]} (time_stamp, open, close, high, low)
-								values ('2016-06-22 19:10:25-07', {candle['open']}, {candle['close']}, {candle['high']}, {candle['low']})
+					INSERT INTO {table} (time_stamp, open, close, high, low, volume)
+								values ('{timestamp}', {entry['open']}, {entry['close']}, {entry['high']},
+										{entry['low']}, {entry['volume']})
 					"""
 				cursor.execute(insert_command)
 			self.db_connection.commit()
@@ -137,16 +152,6 @@ class Robot(PyRobot):
 		finally:
 			if self.db_connection:
 				self.db_connection.close()
-
-	def initialize_db(self):
-		self.db_connection = psycopg2.connect(database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
-
-	def insert_into_db(self):
-		# todo check if table is available
-		#  create table it if it's not
-
-		# todo insert data
-		pass
 
 	def select_from_db(self):
 		pass
