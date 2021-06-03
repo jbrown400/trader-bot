@@ -109,8 +109,12 @@ class Robot(PyRobot):
 			bar_type='minute'
 		)
 		# todo clean data
+		# Create stock frame
+		stock_frame = self.create_stock_frame(data=historical_prices['aggregated'])
+		# Fill in missing values
+		# Insert into db
 		self.insert_into_db(table=tickers[0],
-		                    stock_frame=self.create_stock_frame(data=historical_prices['aggregated']))
+		                    stock_frame=stock_frame)
 
 
 	def initialize_db(self):
@@ -136,15 +140,16 @@ class Robot(PyRobot):
 			cursor.execute(create_command)
 			# print(historical_prices)
 			# start with the first ticker
-			for open, close, high, low, volume in stock_frame.frame:
-				# timestamp = str(datetime.fromtimestamp(entry['datetime']//1000.0))
+			for index, row in stock_frame.frame.iterrows():
+				timestamp = str(datetime.fromtimestamp(index[1].value//1000.0))
 				print("thing")
 				insert_command = f"""
 					INSERT INTO {table} (time_stamp, open, close, high, low, volume)
-								values ('{timestamp}', {entry['open']}, {entry['close']}, {entry['high']},
-										{entry['low']}, {entry['volume']})
+								values ('timestamp', {row['open']}, {row['close']}, {row['high']},
+										{row['low']}, {row['volume']})
 					"""
 				cursor.execute(insert_command)
+			stock_frame.to_sql(table, )
 			self.db_connection.commit()
 		except psycopg2.DatabaseError as e:
 			print(f'Error {e}')
