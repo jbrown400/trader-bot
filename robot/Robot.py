@@ -128,7 +128,7 @@ class Robot(PyRobot):
 			cursor = self.db_connection.cursor()
 			# create table
 			create_command = f"""
-					CREATE TABLE {table} (
+					CREATE TABLE IF NOT EXISTS {table} (
 						time_stamp TIMESTAMP NOT NULL PRIMARY KEY,
 						open NUMERIC NOT NULL,
 						close NUMERIC NOT NULL,
@@ -141,15 +141,14 @@ class Robot(PyRobot):
 			# print(historical_prices)
 			# start with the first ticker
 			for index, row in stock_frame.frame.iterrows():
-				timestamp = str(datetime.fromtimestamp(index[1].value//1000.0))
-				print("thing")
+				# timestamp = str(datetime.fromtimestamp(index[1].value//1000.0))
 				insert_command = f"""
 					INSERT INTO {table} (time_stamp, open, close, high, low, volume)
-								values ('timestamp', {row['open']}, {row['close']}, {row['high']},
-										{row['low']}, {row['volume']})
+								values ('{index[1]}', {row['open']}, {row['close']}, {row['high']},
+										{row['low']}, {row['volume']}) ON CONFLICT (time_stamp) DO NOTHING
 					"""
 				cursor.execute(insert_command)
-			stock_frame.to_sql(table, )
+			# stock_frame.to_sql(table, )
 			self.db_connection.commit()
 		except psycopg2.DatabaseError as e:
 			print(f'Error {e}')
