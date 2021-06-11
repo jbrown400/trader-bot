@@ -3,10 +3,12 @@ from datetime import datetime
 from datetime import timedelta
 
 import psycopg2
+from pyrobot.indicators import Indicators
 from pyrobot.robot import PyRobot
 from pyrobot.stock_frame import StockFrame
 
 from configs.config import *
+from models.enums.Duration import Duration
 from network.finnhub.finnhub import Finnhub
 from robot import Agent
 
@@ -20,22 +22,23 @@ class Robot(PyRobot):
 	Extends PyRobot class (which contains TD API) to add functionality or quickly implement bug fixes
 	"""
 
-	def __init__(self, client_id: str, redirect_uri: str, paper_trading: bool = True, credentials_path: str = None,
-	             trading_account: str = None):
+	def __init__(self, client_id: str, redirect_uri: str, paper_trading: bool = True,
+	             credentials_path: str = None, trading_account: str = None):
 		super().__init__(client_id, redirect_uri, paper_trading, credentials_path, trading_account)
 		"""*** Properties*** """
 		self.py_robot = PyRobot(client_id, redirect_uri, paper_trading, credentials_path, trading_account)
 		self.tickers = ['PLTR']
 		self.db_connection = None
 		# todo uhhh idk if I need to store all data in one table or each ticker in its own table...
-		self.db_table_names = ['rawData', 'processedData', 'models']
-		self.agent: Agent = None
+		# self.db_table_names = ['rawData', 'processedData', 'models']
+		self._agent: Agent = None
 		# Actions
 		"""*** Actions (order matters) ***"""
 		self.initialize_db()
 		self.create_portfolio()
-		self.portfolio.add_position(symbol='PLTR', quantity=1, asset_type='equity')
-		self.get_data('TDA', tickers=self.tickers)
+
+	# self.portfolio.add_position(symbol='PLTR', quantity=1, asset_type='equity')
+	# self.get_data('TDA', tickers=self.tickers)
 
 	@property
 	def agent(self):
@@ -91,12 +94,12 @@ class Robot(PyRobot):
 		"""
 		pass
 
-	def get_historical_finnhub_data(self, ticker: str):
-		Finnhub.get_historical_data(ticker)
-
-	# todo send to cleaner
-
-	def get_data(self, source: str, tickers: [str], ):
+	def get_and_process_data(self, tickers: [str]):
+		# Pull data
+		self.get_data('TDA', tickers=tickers)
+		# Clean data
+		# Todo implement data cleaning
+		# Store data
 		end_date = datetime.today()
 
 		start_date = end_date - timedelta(days=20)
@@ -110,20 +113,28 @@ class Robot(PyRobot):
 		)
 		# todo clean data
 		# Create stock frame
-		stock_frame = self.create_stock_frame(data=historical_prices['aggregated'])
+		self.portfolio.stock_frame = self.create_stock_frame(data=historical_prices['aggregated'])
 		# Fill in missing values
+
+		# Calculate MACD, RSI, and VWAP
+		indicator_client = Indicators(price_data_frame=self.portfolio.stock_frame)
+		indicator_client.ema(period=20, column_name='ema_20')
+		indicator_client.ema(period=200, column_name='ema_200')
+		indicator_client.rsi(period=14)
+
+		# TODO PICKUP HERE
+
 		# Insert into db
 		self.insert_into_db(table=tickers[0],
-		                    stock_frame=stock_frame)
+		                    stock_frame=self.portfolio.stock_frame)
 
+	def get_historical_finnhub_data(self, ticker: str):
+		Finnhub.get_historical_data(ticker)
 
 	def initialize_db(self):
 		self.db_connection = psycopg2.connect(database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
 
 	def insert_into_db(self, table: str, stock_frame: StockFrame):
-		# todo check if table is available
-		#  create table it if it's not
-
 		try:
 			cursor = self.db_connection.cursor()
 			# create table
@@ -134,7 +145,10 @@ class Robot(PyRobot):
 						close NUMERIC NOT NULL,
 						high NUMERIC NOT NULL,
 						low NUMERIC NOT NULL,
-						volume NUMERIC NOT NULL
+						volume NUMERIC NOT NULL,
+						macd NUMERIC NOT NULL,
+						rsi NUMERIC NOT NULL,
+						vwap NUMERIC NOT NULL,
 					)
 					"""
 			cursor.execute(create_command)
@@ -158,4 +172,12 @@ class Robot(PyRobot):
 				self.db_connection.close()
 
 	def select_from_db(self):
+		pass
+
+	def paper_trade(self, time_period: Duration):
+		"""
+		For the specified time period, run paper trading and see how much the bot made
+		:param time_period:
+		:return:
+		"""
 		pass

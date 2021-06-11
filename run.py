@@ -83,11 +83,11 @@ if __name__ == '__main__':
 	# )
 	#
 	# # Set historical prices for current positions
-	# set_historical_prices(trading_robot)
+	set_historical_prices(trading_robot)
 	# # todo create a new dataframe that is cleaned/normalized for the models
 	#
 	# # Create new indicator client
-	# indicator_client = Indicators(price_data_frame=trading_robot.portfolio.stock_frame)
+	indicator_client = Indicators(price_data_frame=trading_robot.portfolio.stock_frame)
 	# # Set the confirmation validation strategy
 	# conf_val.define_strat(trading_robot, indicator_client)
 	# pd.set_option('display.max_columns', None)
