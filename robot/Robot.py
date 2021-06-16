@@ -11,6 +11,7 @@ from configs.config import *
 from models.enums.Duration import Duration
 from network.finnhub.finnhub import Finnhub
 from robot import Agent
+from strategies import conf_val
 
 
 # todo do I want multiple robots and pit them against each other?
@@ -32,6 +33,8 @@ class Robot(PyRobot):
 		# todo uhhh idk if I need to store all data in one table or each ticker in its own table...
 		# self.db_table_names = ['rawData', 'processedData', 'models']
 		self._agent: Agent = None
+		self._indicator_client: Indicators = None
+		self._signals = dict
 		# Actions
 		"""*** Actions (order matters) ***"""
 		self.initialize_db()
@@ -96,7 +99,7 @@ class Robot(PyRobot):
 
 	def get_and_process_data(self, tickers: [str]):
 		# Pull data
-		self.get_data('TDA', tickers=tickers)
+		# self.get_data('TDA', tickers=tickers)
 		# Clean data
 		# Todo implement data cleaning
 		# Store data
@@ -115,14 +118,14 @@ class Robot(PyRobot):
 		# Create stock frame
 		self.portfolio.stock_frame = self.create_stock_frame(data=historical_prices['aggregated'])
 		# Fill in missing values
+		# todo fill in missing values
 
 		# Calculate MACD, RSI, and VWAP
-		indicator_client = Indicators(price_data_frame=self.portfolio.stock_frame)
-		indicator_client.ema(period=20, column_name='ema_20')
-		indicator_client.ema(period=200, column_name='ema_200')
-		indicator_client.rsi(period=14)
+		self._indicator_client = Indicators(price_data_frame=self.portfolio.stock_frame)
+		self._signals = conf_val.define_signals(self._indicator_client, owned=False, trading_symbol=self._tickers[0],
+		                                        bot_account=self.get_accounts(account_number=ACCOUNT_NUMBER))
 
-		# TODO PICKUP HERE
+		# todo insert signals data into a signals table
 
 		# Insert into db
 		self.insert_into_db(table=tickers[0],

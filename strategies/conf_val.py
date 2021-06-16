@@ -33,6 +33,10 @@ def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: st
                    bot_account: dict) -> dict:
 	"""Sets buy/sell/hold signals for the conf_val strat"""
 
+	indicator_client.ema(period=20, column_name='ema_20')
+	indicator_client.ema(period=200, column_name='ema_200')
+	indicator_client.rsi(period=14)
+
 	# Calculate the current % gap between the open and current ema_20
 	#  This will be used to prevent a buy signal from happening if the open just barely
 	#  goes over the ema_20.
