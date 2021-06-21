@@ -186,7 +186,7 @@ if __name__ == '__main__':
 		# Check for the signals
 		# signals = indicator_client.check_signals()
 		# Define the buy and sell signals
-		signals = conf_val.define_signals(
+		signals = conf_val.calculate_columns(
 			indicator_client,
 			ownership_dict[trading_symbol],
 			trading_symbol,

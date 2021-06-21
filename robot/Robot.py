@@ -122,8 +122,8 @@ class Robot(PyRobot):
 
 		# Calculate MACD, RSI, and VWAP
 		self._indicator_client = Indicators(price_data_frame=self.portfolio.stock_frame)
-		self._signals = conf_val.define_signals(self._indicator_client, owned=False, trading_symbol=self._tickers[0],
-		                                        bot_account=self.get_accounts(account_number=ACCOUNT_NUMBER))
+		self._signals = conf_val.calculate_columns(self._indicator_client, owned=False, trading_symbol=self._tickers[0],
+		                                           bot_account=self.get_accounts(account_number=ACCOUNT_NUMBER))
 
 		# todo insert signals data into a signals table
 
@@ -185,8 +185,9 @@ class Robot(PyRobot):
 			print(f'Error {e}')
 			sys.exit(1)
 		finally:
-			if self.db_connection:
-				self.db_connection.close()
+			pass
+			# if self.db_connection:
+			# 	self.db_connection.close()
 
 	def select_from_db(self):
 		pass
@@ -197,4 +198,26 @@ class Robot(PyRobot):
 		:param time_period:
 		:return:
 		"""
-		pass
+		print("Starting to paper trade")
+		# todo select data
+		try:
+			cursor = self.db_connection.cursor()
+			select_command = f"""
+					SELECT * FROM {self._tickers[0]} ORDER BY time_stamp ASC
+			"""
+			cursor.execute(select_command)
+			# Need to use fetchone() so I don't try to load all the data in memory
+			row = cursor.fetchone()
+			print(row)
+			print(type(row))
+			# while row is not None:
+			# 	print(row)
+			# 	print(type(row))
+			# 	row
+		except psycopg2.DatabaseError as e:
+			print(f'Error {e}')
+			sys.exit(1)
+		finally:
+			if self.db_connection:
+				self.db_connection.close()
+

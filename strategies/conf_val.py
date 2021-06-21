@@ -30,8 +30,8 @@ def test_other(ind_1, ind_2):
 	return pd.Series({})
 
 
-def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: str,
-                   bot_account: dict) -> dict:
+def calculate_columns(indicator_client: Indicators, owned: bool, trading_symbol: str,
+                      bot_account: dict) -> dict:
 	"""Sets buy/sell/hold signals for the conf_val strat"""
 
 	indicator_client.ema(period=20, column_name='ema_20').dropna(inplace=True)
@@ -67,6 +67,8 @@ def define_signals(indicator_client: Indicators, owned: bool, trading_symbol: st
 	open_ema_20_percent_diff = latest_row['open_ema_20_percent_diff'][0]
 	ema_20_ema_200_percent_diff = latest_row['ema_20_ema_200_percent_diff'][0]
 
+
+def calculate_signals():
 	signals = {
 		'buys': pd.Series(),
 		'sells': pd.Series()
