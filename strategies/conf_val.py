@@ -31,8 +31,8 @@ def test_other(ind_1, ind_2):
 
 
 def calculate_columns(indicator_client: Indicators, owned: bool, trading_symbol: str,
-                      bot_account: dict) -> dict:
-	"""Sets buy/sell/hold signals for the conf_val strat"""
+                      bot_account: dict):
+	"""Sets buy/sell/hold signals for the conf_val strategy"""
 
 	indicator_client.ema(period=20, column_name='ema_20').dropna(inplace=True)
 	indicator_client.ema(period=200, column_name='ema_200').dropna(inplace=True)
@@ -49,11 +49,59 @@ def calculate_columns(indicator_client: Indicators, owned: bool, trading_symbol:
 		((v1 - v2) / abs(v2)) * 100
 	indicator_client.price_data_frame['ema_20_ema_200_percent_diff'] = \
 		((v2 - v3) / abs(v3)) * 100
+	indicator_client.price_data_frame['signals'] = indicator_client.price_data_frame.apply(lambda row: calc_sig(row, owned), axis=1)
+	print("break")
 
-	# todo clean (normalize) latest row
+	# todo clean (normalize) latest row (when I'm ready to start live trading)
 
 	# todo this is where I would pass the latest row to the ML models
 
+
+def calc_sig(row, owned) -> str:
+
+	#todo START HERE
+	# so I'm stuck. I need to know if I'm owning the stock or not before I can calculate the signals properly
+	# but I don't know how to know that when I only am passed the current row as a result of the apply function
+	# How do I know if I owned the stock as of the previous row?
+
+	open_price = row['open']
+	close_price = row['close']
+	rsi = row['rsi']
+	ema_20 = row['ema_20']
+	ema_200 = row['ema_200']
+	open_ema_20_percent_diff = row['open_ema_20_percent_diff']
+	ema_20_ema_200_percent_diff = row['ema_20_ema_200_percent_diff']
+	if ema_200 > ema_20 > open_price and rsi > 80:
+		# sell position
+		return "sell"
+
+	a = close_price > open_price > ema_20 > ema_200
+	b = open_ema_20_percent_diff > .5
+	c = ema_20_ema_200_percent_diff > .1
+	d = rsi < 60
+
+	# print("A: ", a)
+	# print("B: ", b)
+	# print("C: ", c)
+	# print("D: ", d)
+	# If a wide gap on confirmation, a low RSI, and the price of the
+	#  security is 80% of my available funds
+	if a and \
+		b and \
+		c:
+		# open_price < (available_funds * .8) and \
+		# Buy
+		return "buy"
+	# signals['buys'] = pd.Series({trading_symbol: True})
+	# return signals
+	# Wait
+	# signals['buys'] = pd.Series([trading_symbol, True])
+	# return signals
+	return "hold"
+
+
+def calculate_signals(indicator_client: Indicators, owned: bool, trading_symbol: str,
+                      bot_account: dict) -> str:
 	# Grab the latest row
 	latest_row = indicator_client.price_data_frame.tail(n=1)
 
@@ -67,21 +115,21 @@ def calculate_columns(indicator_client: Indicators, owned: bool, trading_symbol:
 	open_ema_20_percent_diff = latest_row['open_ema_20_percent_diff'][0]
 	ema_20_ema_200_percent_diff = latest_row['ema_20_ema_200_percent_diff'][0]
 
-
-def calculate_signals():
-	signals = {
-		'buys': pd.Series(),
-		'sells': pd.Series()
-	}
+	# signals = {
+	# 	'buys': pd.Series(),
+	# 	'sells': pd.Series()
+	# }
 
 	if owned:
 		if ema_200 < ema_20 < open_price and rsi < 80:
 			# Hold position
-			return signals
+			return "hold"
+			# return signals
 		else:
 			# Sell
-			signals['sells'] = pd.Series({trading_symbol: True})
-			return signals
+			return "sell"
+			# signals['sells'] = pd.Series({trading_symbol: True})
+			# return signals
 	else:
 		a = close_price > open_price > ema_20 > ema_200
 		b = open_ema_20_percent_diff > .5
@@ -99,8 +147,10 @@ def calculate_signals():
 				c:
 			# open_price < (available_funds * .8) and \
 			# Buy
-			signals['buys'] = pd.Series({trading_symbol: True})
-			return signals
+			return "buy"
+			# signals['buys'] = pd.Series({trading_symbol: True})
+			# return signals
 		# Wait
 		# signals['buys'] = pd.Series([trading_symbol, True])
-		return signals
+		# return signals
+		return "hold"

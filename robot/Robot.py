@@ -122,10 +122,10 @@ class Robot(PyRobot):
 
 		# Calculate MACD, RSI, and VWAP
 		self._indicator_client = Indicators(price_data_frame=self.portfolio.stock_frame)
-		self._signals = conf_val.calculate_columns(self._indicator_client, owned=False, trading_symbol=self._tickers[0],
-		                                           bot_account=self.get_accounts(account_number=ACCOUNT_NUMBER))
+		conf_val.calculate_columns(self._indicator_client, owned=False, trading_symbol=self._tickers[0],
+		                           bot_account=self.get_accounts(account_number=ACCOUNT_NUMBER))
 
-		# todo insert signals data into a signals table
+		# todo insert signals data into a column on stock frame
 
 		# Insert into db
 		self.insert_into_db(table=tickers[0],
@@ -199,7 +199,6 @@ class Robot(PyRobot):
 		:return:
 		"""
 		print("Starting to paper trade")
-		# todo select data
 		try:
 			cursor = self.db_connection.cursor()
 			select_command = f"""
@@ -208,11 +207,13 @@ class Robot(PyRobot):
 			cursor.execute(select_command)
 			# Need to use fetchone() so I don't try to load all the data in memory
 			row = cursor.fetchone()
-			print(row)
-			print(type(row))
-			# while row is not None:
-			# 	print(row)
-			# 	print(type(row))
+			while row is not None:
+				# calculate signal
+
+
+				# track buy/sell
+				print(row)
+				row = cursor.fetchone()
 			# 	row
 		except psycopg2.DatabaseError as e:
 			print(f'Error {e}')
