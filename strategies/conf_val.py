@@ -42,14 +42,17 @@ def calculate_columns(indicator_client: Indicators, owned: bool, trading_symbol:
 	# Calculate the current % gap between the open and current ema_20
 	#  This will be used to prevent a buy signal from happening if the open just barely
 	#  goes over the ema_20.
-	v1 = indicator_client.price_data_frame['open']
-	v2 = indicator_client.price_data_frame['ema_20']
-	v3 = indicator_client.price_data_frame['ema_200']
+	v1 = indicator_client.price_data_frame.loc[:, 'open']
+	v2 = indicator_client.price_data_frame.loc[:, 'ema_20']
+	v3 = indicator_client.price_data_frame.loc[:, 'ema_200']
 	indicator_client.price_data_frame['open_ema_20_percent_diff'] = \
 		((v1 - v2) / abs(v2)) * 100
 	indicator_client.price_data_frame['ema_20_ema_200_percent_diff'] = \
 		((v2 - v3) / abs(v3)) * 100
-	indicator_client.price_data_frame['signals'] = indicator_client.price_data_frame.apply(lambda row: calc_sig(row, owned), axis=1)
+	indicator_client.price_data_frame.loc[:, 'owned'] = False
+	indicator_client.price_data_frame.loc[:, 'prev_owned'] = indicator_client.price_data_frame.loc[:, 'owned'].shift()
+	indicator_client.price_data_frame.loc[:, 'signals'] = "Hold"
+	indicator_client.price_data_frame.transform(lambda row: calc_sig(row), axis=1)
 	print("break")
 
 	# todo clean (normalize) latest row (when I'm ready to start live trading)
@@ -57,12 +60,7 @@ def calculate_columns(indicator_client: Indicators, owned: bool, trading_symbol:
 	# todo this is where I would pass the latest row to the ML models
 
 
-def calc_sig(row, owned) -> str:
-
-	#todo START HERE
-	# so I'm stuck. I need to know if I'm owning the stock or not before I can calculate the signals properly
-	# but I don't know how to know that when I only am passed the current row as a result of the apply function
-	# How do I know if I owned the stock as of the previous row?
+def calc_sig(row) -> str:
 
 	open_price = row['open']
 	close_price = row['close']
