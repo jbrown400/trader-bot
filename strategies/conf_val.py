@@ -49,8 +49,8 @@ def calculate_columns(indicator_client: Indicators, owned: bool, trading_symbol:
 		((v1 - v2) / abs(v2)) * 100
 	indicator_client.price_data_frame['ema_20_ema_200_percent_diff'] = \
 		((v2 - v3) / abs(v3)) * 100
-	indicator_client.price_data_frame.loc[:, 'owned'] = False
-	indicator_client.price_data_frame.loc[:, 'prev_owned'] = indicator_client.price_data_frame.loc[:, 'owned'].shift()
+	indicator_client.price_data_frame.loc[:, 'own'] = False
+	indicator_client.price_data_frame.loc[:, 'prev_owned'] = indicator_client.price_data_frame.loc[:, 'own'].shift()
 	indicator_client.price_data_frame.loc[:, 'signals'] = "Hold"
 	indicator_client.price_data_frame.transform(lambda row: calc_sig(row), axis=1)
 	print("break")
@@ -62,6 +62,7 @@ def calculate_columns(indicator_client: Indicators, owned: bool, trading_symbol:
 
 def calc_sig(row) -> str:
 
+	prev_own = row['prev_owned']
 	open_price = row['open']
 	close_price = row['close']
 	rsi = row['rsi']
