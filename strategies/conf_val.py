@@ -45,14 +45,15 @@ def calculate_columns(indicator_client: Indicators, owned: bool, trading_symbol:
 	v1 = indicator_client.price_data_frame.loc[:, 'open']
 	v2 = indicator_client.price_data_frame.loc[:, 'ema_20']
 	v3 = indicator_client.price_data_frame.loc[:, 'ema_200']
-	indicator_client.price_data_frame['open_ema_20_percent_diff'] = \
+	indicator_client.price_data_frame.loc[:, 'open_ema_20_percent_diff'] = \
 		((v1 - v2) / abs(v2)) * 100
-	indicator_client.price_data_frame['ema_20_ema_200_percent_diff'] = \
+	indicator_client.price_data_frame.loc[:, 'ema_20_ema_200_percent_diff'] = \
 		((v2 - v3) / abs(v3)) * 100
 	indicator_client.price_data_frame.loc[:, 'own'] = False
 	indicator_client.price_data_frame.loc[:, 'prev_owned'] = indicator_client.price_data_frame.loc[:, 'own'].shift()
-	indicator_client.price_data_frame.loc[:, 'signals'] = "Hold"
-	indicator_client.price_data_frame.transform(lambda row: calc_sig(row), axis=1)
+	indicator_client.price_data_frame.loc[:, 'prev_owned'].fillna(False, inplace=True)
+	indicator_client.price_data_frame.loc[:, 'signal'] = "hold"
+	# indicator_client.price_data_frame.apply(lambda row: calc_sig(row), axis=1)
 	print("break")
 
 	# todo clean (normalize) latest row (when I'm ready to start live trading)
@@ -60,7 +61,7 @@ def calculate_columns(indicator_client: Indicators, owned: bool, trading_symbol:
 	# todo this is where I would pass the latest row to the ML models
 
 
-def calc_sig(row) -> str:
+def calc_sig(row: pd.Series) -> pd.Series:
 
 	prev_own = row['prev_owned']
 	open_price = row['open']
@@ -70,9 +71,11 @@ def calc_sig(row) -> str:
 	ema_200 = row['ema_200']
 	open_ema_20_percent_diff = row['open_ema_20_percent_diff']
 	ema_20_ema_200_percent_diff = row['ema_20_ema_200_percent_diff']
+
 	if ema_200 > ema_20 > open_price and rsi > 80:
 		# sell position
-		return "sell"
+		row['signal'] = "sell"
+		return row
 
 	a = close_price > open_price > ema_20 > ema_200
 	b = open_ema_20_percent_diff > .5
@@ -85,18 +88,14 @@ def calc_sig(row) -> str:
 	# print("D: ", d)
 	# If a wide gap on confirmation, a low RSI, and the price of the
 	#  security is 80% of my available funds
-	if a and \
-		b and \
-		c:
-		# open_price < (available_funds * .8) and \
-		# Buy
-		return "buy"
-	# signals['buys'] = pd.Series({trading_symbol: True})
-	# return signals
-	# Wait
-	# signals['buys'] = pd.Series([trading_symbol, True])
-	# return signals
-	return "hold"
+	# if a and \
+	# 	b and \
+	# 	c and d:
+	if d:
+		row['signal'] = "buy"
+		return row
+	row['signal'] = "hold"
+	return row
 
 
 def calculate_signals(indicator_client: Indicators, owned: bool, trading_symbol: str,

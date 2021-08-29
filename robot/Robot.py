@@ -154,7 +154,9 @@ class Robot(PyRobot):
 						macd NUMERIC NOT NULL,
 						rsi NUMERIC NOT NULL,
 						open_ema_20_percent_diff NUMERIC NOT NULL,
-						ema_20_ema_200_percent_diff NUMERIC NOT NULL
+						ema_20_ema_200_percent_diff NUMERIC NOT NULL,
+						prev_owned BOOLEAN NOT NULL,
+						signal TEXT NOT NULL
 					)
 					"""
 			cursor.execute(create_command)
@@ -164,7 +166,7 @@ class Robot(PyRobot):
 				# timestamp = str(datetime.fromtimestamp(index[1].value//1000.0))
 				insert_command = f"""
 					INSERT INTO {table} (time_stamp, open, close, high, low, volume, ema_20, ema_200, macd, rsi,
-											open_ema_20_percent_diff, ema_20_ema_200_percent_diff)
+											open_ema_20_percent_diff, ema_20_ema_200_percent_diff, prev_owned, signal)
 								values ('{index[1]}',
 										{row['open']},
 										{row['close']},
@@ -176,7 +178,9 @@ class Robot(PyRobot):
 										{row['macd']},
 										{row['rsi']},
 										{row['open_ema_20_percent_diff']},
-										{row['ema_20_ema_200_percent_diff']}) ON CONFLICT (time_stamp) DO NOTHING
+										{row['ema_20_ema_200_percent_diff']},
+										'{row['prev_owned']}',
+										'{row['signal']}') ON CONFLICT (time_stamp) DO NOTHING
 					"""
 				cursor.execute(insert_command)
 			# stock_frame.to_sql(table, )
