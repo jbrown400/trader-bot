@@ -49,11 +49,11 @@ def calculate_columns(indicator_client: Indicators, owned: bool, trading_symbol:
 		((v1 - v2) / abs(v2)) * 100
 	indicator_client.price_data_frame.loc[:, 'ema_20_ema_200_percent_diff'] = \
 		((v2 - v3) / abs(v3)) * 100
+	indicator_client.price_data_frame.loc[:, 'account_value'] = 1000  # Start with $1000
 	indicator_client.price_data_frame.loc[:, 'own'] = False
 	indicator_client.price_data_frame.loc[:, 'prev_owned'] = indicator_client.price_data_frame.loc[:, 'own'].shift()
 	indicator_client.price_data_frame.loc[:, 'prev_owned'].fillna(False, inplace=True)
-	indicator_client.price_data_frame.loc[:, 'signal'] = "hold"
-	# indicator_client.price_data_frame.apply(lambda row: calc_sig(row), axis=1)
+	indicator_client.price_data_frame.loc[:, 'signal'] = indicator_client.price_data_frame.apply(lambda row: calc_sig(row), axis=1)
 	print("break")
 
 	# todo clean (normalize) latest row (when I'm ready to start live trading)
@@ -88,10 +88,9 @@ def calc_sig(row: pd.Series) -> pd.Series:
 	# print("D: ", d)
 	# If a wide gap on confirmation, a low RSI, and the price of the
 	#  security is 80% of my available funds
-	# if a and \
-	# 	b and \
-	# 	c and d:
-	if d:
+	if a and \
+		b and \
+		c and d:
 		row['signal'] = "buy"
 		return row
 	row['signal'] = "hold"

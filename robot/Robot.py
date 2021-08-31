@@ -156,7 +156,8 @@ class Robot(PyRobot):
 						open_ema_20_percent_diff NUMERIC NOT NULL,
 						ema_20_ema_200_percent_diff NUMERIC NOT NULL,
 						prev_owned BOOLEAN NOT NULL,
-						signal TEXT NOT NULL
+						signal TEXT NOT NULL,
+						account_value NUMERIC NOT NULL
 					)
 					"""
 			cursor.execute(create_command)
@@ -166,7 +167,8 @@ class Robot(PyRobot):
 				# timestamp = str(datetime.fromtimestamp(index[1].value//1000.0))
 				insert_command = f"""
 					INSERT INTO {table} (time_stamp, open, close, high, low, volume, ema_20, ema_200, macd, rsi,
-											open_ema_20_percent_diff, ema_20_ema_200_percent_diff, prev_owned, signal)
+											open_ema_20_percent_diff, ema_20_ema_200_percent_diff, prev_owned, signal,
+											account_value)
 								values ('{index[1]}',
 										{row['open']},
 										{row['close']},
@@ -180,7 +182,9 @@ class Robot(PyRobot):
 										{row['open_ema_20_percent_diff']},
 										{row['ema_20_ema_200_percent_diff']},
 										'{row['prev_owned']}',
-										'{row['signal']}') ON CONFLICT (time_stamp) DO NOTHING
+										'{row['signal']}',
+										{row['account_value']}) ON CONFLICT (time_stamp) DO UPDATE
+										SET signal = EXCLUDED.signal
 					"""
 				cursor.execute(insert_command)
 			# stock_frame.to_sql(table, )
@@ -202,27 +206,41 @@ class Robot(PyRobot):
 		:param time_period:
 		:return:
 		"""
+		current_account_value = 1000
 		print("Starting to paper trade")
+		for index, row in self.stock_frame.frame.iterrows():
+			# Simulate signal
+			if row['signal'] == "buy":
+				row['own'] = True
+				current_account_value -= row['open'] * 10
+			elif row['signal'] == "sell":
+				row['own'] = False
+				current_account_value += row['open'] * 10
+			row['account_value'] = current_account_value
+		print(current_account_value)
+		"""
 		try:
 			cursor = self.db_connection.cursor()
-			select_command = f"""
+			select_command = f""
 					SELECT * FROM {self._tickers[0]} ORDER BY time_stamp ASC
-			"""
+			""
 			cursor.execute(select_command)
 			# Need to use fetchone() so I don't try to load all the data in memory
 			row = cursor.fetchone()
 			while row is not None:
-				# calculate signal
-
-
-				# track buy/sell
+				# Simulate signal
+				if row['signal'] == "buy":
+					row['own'] = True
+					row['account_value'] -= row['open'] * 100
+				elif row['signal'] == "sell":
+					row['own'] = False
+					row['account_value'] += row['open'] * 100
 				print(row)
 				row = cursor.fetchone()
-			# 	row
 		except psycopg2.DatabaseError as e:
 			print(f'Error {e}')
 			sys.exit(1)
 		finally:
 			if self.db_connection:
 				self.db_connection.close()
-
+		"""

@@ -14,4 +14,4 @@ def run_v1():
 	robot.get_and_process_data(tickers=robot.tickers)
 
 	# Paper trade on data for that day to see how much money was made
-	# robot.paper_trade(Duration.TODAY)
+	robot.paper_trade(Duration.TODAY)
