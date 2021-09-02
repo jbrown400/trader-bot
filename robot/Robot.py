@@ -200,7 +200,10 @@ class Robot(PyRobot):
 	def select_from_db(self):
 		pass
 
-	def paper_trade(self, time_period: Duration):
+	def paper_trading(self):
+		pass
+
+	def simulate_trading(self, time_period: Duration):
 		"""
 		For the specified time period, run paper trading and see how much the bot made
 		:param time_period:
