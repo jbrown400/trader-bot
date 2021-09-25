@@ -5,11 +5,11 @@ import psycopg2
 from pyrobot.indicators import Indicators
 from pyrobot.trades import Trade
 
+import utils.general_utils as util  # set_historical_prices, set_trade, bcolors
 from configs.config import *
 from robot.Robot import Robot
 from strategies import conf_val
 from utils import trade_utils
-from utils.general_utils import set_historical_prices, set_trade, bcolors
 from v1_pipeline import run_v1
 
 # todo Check if orders were filled (aka I have a position)
@@ -90,7 +90,7 @@ if __name__ == '__main__':
 	)
 
 	# Set historical prices for current positions
-	set_historical_prices(trading_robot)
+	util.set_historical_prices(trading_robot)
 	# todo create a new dataframe that is cleaned/normalized for the models
 
 	# Create new indicator client
@@ -150,18 +150,18 @@ if __name__ == '__main__':
 	}
 
 	# Initialize order variable
-	order = None
+	# order = None
 
-	signals = indicator_client.check_signals()
+	# signals = indicator_client.check_signals()
 
 	# Execute trade
-	trading_robot.execute_signals(
-		signals=signals,
-		trades_to_execute=trades_dict
-	)
+	# trading_robot.execute_signals(
+	# 	signals=signals,
+	# 	trades_to_execute=trades_dict
+	# )
 
-	ownership_dict[trading_symbol] = True
-	order: Trade = trades_dict[trading_symbol]['buy']['trade_func']
+	# ownership_dict[trading_symbol] = True
+	# order: Trade = trades_dict[trading_symbol]['buy']['trade_func']
 
 	#########################################
 
@@ -173,12 +173,11 @@ if __name__ == '__main__':
 		trading_robot.portfolio.stock_frame.add_rows(data=latest_bars)
 
 		# Set order legs
-		trades_dict = set_trade(trading_robot,
-		                        trading_symbol,
-
-		                        indicator_client.price_data_frame['open'][0],
-		                        trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)[0][
-			                        'cash_available_for_trading'], .5)
+		trades_dict = util.set_trade(trading_robot,
+		                             trading_symbol,
+		                             indicator_client.price_data_frame['open'][0],
+		                             trading_robot.get_accounts(account_number=ACCOUNT_NUMBER)[0][
+			                             'cash_available_for_trading'], .5)
 
 		# Refresh the indicators
 		indicator_client.refresh()
@@ -202,8 +201,8 @@ if __name__ == '__main__':
 		# print("Symbol: {}".format(list(trades_dict.keys())[0]))
 		print("Symbol: {}".format(trading_symbol))
 		print("Ownership Status: {}".format(ownership_dict[trading_symbol]))
-		print(f"Buy signals: {bcolors.OKGREEN}{buys}{bcolors.ENDC}")
-		print(f"Sell Signals: {bcolors.FAIL}{sells}{bcolors.ENDC}")
+		print(f"Buy signals: {util.bcolors.OKGREEN}{buys}{util.bcolors.ENDC}")
+		print(f"Sell Signals: {util.bcolors.FAIL}{sells}{util.bcolors.ENDC}")
 		print(trading_robot.portfolio.stock_frame.symbol_groups.tail(n=3))
 		print("-" * 50)
 		print("")

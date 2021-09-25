@@ -7,6 +7,7 @@ from pyrobot.indicators import Indicators
 from pyrobot.robot import PyRobot
 from pyrobot.stock_frame import StockFrame
 
+import utils.general_utils as util
 from configs.config import *
 from models.enums.Duration import Duration
 from network.finnhub.finnhub import Finnhub
@@ -24,21 +25,22 @@ class Robot(PyRobot):
 	"""
 
 	def __init__(self, client_id: str, redirect_uri: str, paper_trading: bool = True,
-	             credentials_path: str = None, trading_account: str = None):
+	             credentials_path: str = None, ticker: str = 'PLTR', trading_account: str = None):
 		super().__init__(client_id, redirect_uri, paper_trading, credentials_path, trading_account)
 		"""*** Properties*** """
 		self.py_robot = PyRobot(client_id, redirect_uri, paper_trading, credentials_path, trading_account)
-		self.tickers = ['PLTR']
-		self.db_connection = None
-		# todo uhhh idk if I need to store all data in one table or each ticker in its own table...
-		# self.db_table_names = ['rawData', 'processedData', 'models']
+		self.tickers = ticker
 		self._agent: Agent = None
-		self._indicator_client: Indicators = None
+		self._trades_dict = {}
+		self._ownership_dict = {}
+		# self._indicator_client: Indicators = None
 		self._signals = dict
 		# Actions
-		"""*** Actions (order matters) ***"""
-		self.initialize_db()
 		self.create_portfolio()
+		# self.define_enter_and_exit_trades(ticker)
+		self.set_ownership_dict(ticker)
+
+
 
 	# self.portfolio.add_position(symbol='PLTR', quantity=1, asset_type='equity')
 	# self.get_data('TDA', tickers=self.tickers)
@@ -71,6 +73,58 @@ class Robot(PyRobot):
 		:return: Performance metric
 		"""
 		return "performance"
+
+	def define_enter_and_exit_trades(self, ticker):
+
+		available_funds = self.get_accounts(account_number=ACCOUNT_NUMBER)[0]['cash_available_for_trading']
+		max_percent = .1  # 10%
+		current_price = self._indicator_client.price_data_frame['open'][0]
+		qty = round((available_funds * max_percent) / current_price) if max_percent else 1
+
+		# Create trade object for entering position
+		new_enter_trade = self.create_trade(
+			trade_id='long_enter',
+			enter_or_exit='enter',
+			long_or_short='long',
+			order_type='mkt'
+		)
+		# Add an order leg for the enter trade
+		new_enter_trade.instrument(
+			symbol=ticker,
+			quantity=qty,
+			asset_type='EQUITY'
+		)
+		# Create a new trade object for exiting position
+		new_exit_trade = self.create_trade(
+			trade_id='long_exit',
+			enter_or_exit='exit',
+			long_or_short='long',
+			order_type='mkt'
+		)
+		# Add an order leg for the exit trade
+		new_exit_trade.instrument(
+			symbol=ticker,
+			quantity=qty,
+			asset_type='EQUITY'
+		)
+
+		self._trades_dict = {
+			ticker: {
+				'buy': {
+					'trade_func': self.trades['long_enter'],
+					'trade_id': self.trades['long_enter'].trade_id
+				},
+				'sell': {
+					'trade_func': self.trades['long_exit'],
+					'trade_id': self.trades['long_exit'].trade_id
+				},
+			}
+		}
+
+	def set_ownership_dict(self, ticker):
+		self._ownership_dict = {
+			ticker: False
+		}
 
 	def get_today_data(self):
 		"""
@@ -135,6 +189,8 @@ class Robot(PyRobot):
 		Finnhub.get_historical_data(ticker)
 
 	def initialize_db(self):
+		#todo remove this as the robot should not house the db. It should interact with whichever
+		#  db is in the environment
 		self.db_connection = psycopg2.connect(database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
 
 	def insert_into_db(self, table: str, stock_frame: StockFrame):
@@ -201,6 +257,23 @@ class Robot(PyRobot):
 		pass
 
 	def paper_trading(self):
+		# Select strat
+
+		# Open data stream
+		while self.regular_market_open:
+			latest_bar = self.get_latest_bar()  # Read in minute candle
+			self.portfolio.stock_frame.add_rows(data=latest_bar)  # Save to in memory df
+			# todo save latest_bar to db
+
+		# while stream is connected and market is open
+		"""
+			1. Read in minute candle
+			2. Store candle data into DB
+			3. Store candle data into in memory df (should I just store the whole df after market close..?)
+				(no, store each candle in case the program crashes and we lose the in memory df)
+			4. Using in memory df, calculate signal
+		"""
+
 		pass
 
 	def simulate_trading(self, time_period: Duration):
